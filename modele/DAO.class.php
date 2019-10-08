@@ -592,6 +592,7 @@ class DAO
     // --------------------------------------------------------------------------------------
     // début de la zone attribuée au développeur 2 (Yvan) : lignes 550 à 749
     // --------------------------------------------------------------------------------------
+    //Rôle : indique si $adrMail existe dans la table tracegps_utilisateurs
     public function existeAdrMailUtilisateur($adrMail) {
         // préparation de la requête de recherche
         $txt_req = "Select count(*) from tracegps_utilisateurs where adrMail = :adrMail";
@@ -612,8 +613,31 @@ class DAO
             return true;
         }
     }
-
     
+    
+    //Rôle : indique si l'utilisateur $idAutorisant autorise l'utilisateur $idAutorise à consulter ses traces
+    public function autoriseAConsulter($idAutorisant, $idAutorisé){
+        $txt_req = "Select count(*) from tracegps_autorisations where idAutorise = :idAutorise AND idAutorisant = :idAutorisant";
+        $req = $this->cnx->prepare($txt_req);
+        // liaison de la requête et de ses paramètres
+        $req->bindValue("idAutorise", $idAutorisé, PDO::PARAM_INT);
+        $req->bindValue("idAutorisant", $idAutorisant, PDO::PARAM_INT);
+        // exécution de la requête
+        $req->execute();
+        
+        $nbReponses = $req->fetchColumn(0);
+        // libère les ressources du jeu de données
+        $req->closeCursor();
+        
+        // fourniture de la réponse
+        if ($nbReponses == 0) {
+            return false;
+        }
+        else {
+            return true;
+        }
+    }
+
     
     
     
