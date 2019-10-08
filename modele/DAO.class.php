@@ -344,7 +344,7 @@ class DAO
     
     
     // --------------------------------------------------------------------------------------
-    // début de la zone attribuée au développeur 1 (xxxxxxxxxxxxxxxxxxxx) : lignes 350 à 549
+    // début de la zone attribuée au développeur 1 (Corentin) : lignes 350 à 549
     // --------------------------------------------------------------------------------------
     
 
@@ -544,7 +544,7 @@ class DAO
     
     
     // --------------------------------------------------------------------------------------
-    // début de la zone attribuée au développeur 2 (xxxxxxxxxxxxxxxxxxxx) : lignes 550 à 749
+    // début de la zone attribuée au développeur 2 (Yvan) : lignes 550 à 749
     // --------------------------------------------------------------------------------------
     
 
@@ -744,10 +744,17 @@ class DAO
     
     
     // --------------------------------------------------------------------------------------
-    // début de la zone attribuée au développeur 3 (xxxxxxxxxxxxxxxxxxxx) : lignes 750 à 949
+    // début de la zone attribuée au développeur 3 (Guillaume) : lignes 750 à 949
     // --------------------------------------------------------------------------------------
     
-    
+    // Méthode getLesUtilisateursAutorisant prenant pour paramètre $idUtilisateur
+    // Le rôle de cette fonction est de fournir la collection des utilisateurs (de niveau 1) autorisant l'utilisateur $idUtilisateur à voir leurs parcours
+    // Le paramètre à fournir est le paramètre $idUtilisateur qui comprend l'identifiant de l'utilisateur autorisé à consulter des parcours 
+    // Cette méthode retourne la collection des utilisateurs qui ont donné l'autorisation à $idUtilisateur
+    public function getLesUtilisateursAutorisant()
+    {
+        
+    }
     
     
     
