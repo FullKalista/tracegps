@@ -360,11 +360,12 @@ class DAO
         $txt_req .= " where niveau = 1";
         $txt_req .= " AND id IN (SELECT idAutorise";
         $txt_req .= " from tracegps_autorisations";
-        $txt_req .= " where idAutorisant = 2)";
+        $txt_req .= " where idAutorisant = :idUtilisateur)";
         $txt_req .= " order by pseudo";
         
         
         $req = $this->cnx->prepare($txt_req);
+        $req->bindValue("idUtilisateur", $idUtilisateur, PDO::PARAM_STR);
         // extraction des données
         $req->execute();
         $uneLigne = $req->fetch(PDO::FETCH_OBJ);
