@@ -844,9 +844,11 @@ class DAO
     {
         // préparation de la requête de recherche
         $txt_req = "Select id, pseudo, mdpSha1, adrMail, numTel, niveau, dateCreation, nbTraces, dateDerniereTrace";
-        $txt_req .= " from tracegps_vue_utilisateurs inner join tracegps_autorisations on tracegps_vue_utilisateurs.id = tracegps_autorisations.idAutorisant";
+        $txt_req .= " from tracegps_vue_utilisateurs";
         $txt_req .= " where niveau = 1";
-        $txt_req .= "and idAutorise = 2";
+        $txt_req .= "and id in select idAutorisant";
+        $txt_req .= "from tracegps_autorisations";
+        $txt_req .= "where idAutorise = ";
         $txt_req .= " order by pseudo";
         
         $req = $this->cnx->prepare($txt_req);
