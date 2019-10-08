@@ -847,12 +847,13 @@ class DAO
         $txt_req = "Select id, pseudo, mdpSha1, adrMail, numTel, niveau, dateCreation, nbTraces, dateDerniereTrace";
         $txt_req .= " from tracegps_vue_utilisateurs";
         $txt_req .= " where niveau = 1";
-        $txt_req .= "and id in select idAutorisant";
-        $txt_req .= "from tracegps_autorisations";
-        $txt_req .= "where idAutorise = ";
+        $txt_req .= " and id in (select idAutorisant";
+        $txt_req .= " from tracegps_autorisations";
+        $txt_req .= " where idAutorise = :idUtilisateur)";
         $txt_req .= " order by pseudo";
         
         $req = $this->cnx->prepare($txt_req);
+        $req->bindValue("idUtilisateur", $idUtilisateur, PDO::PARAM_STR);
         // extraction des données
         $req->execute();
         $uneLigne = $req->fetch(PDO::FETCH_OBJ);
