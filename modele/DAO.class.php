@@ -347,8 +347,15 @@ class DAO
     // début de la zone attribuée au développeur 1 (Corentin) : lignes 350 à 549
     // --------------------------------------------------------------------------------------
     
-
-    
+    // fournit la collection  des utilisateurs (de niveau 1) 
+    // autorisés à voir les parcours de l'utilisateur $idUtilisateur
+    // Paramètres à fournir : $idUtilisateur : identifiant de l'utilisateur autorisant à consulter ses parcours
+    // Valeur de retour : collection d'objets Utilisateur
+    // la collection des utilisateurs qui sont autorisés à voir les parcours de l'utilisateur $idUtilisateur
+    public function getLesUtilisateursAutorises($idUtilisateur)
+    {
+        
+    }
     
     
     
