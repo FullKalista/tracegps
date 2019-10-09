@@ -43,6 +43,14 @@ foreach ($lesUtilisateurs as $unUtilisateur)
 echo ('<br>');
 }
 
+// test de la méthode creerUneAutorisation
+// Modifié par Guillaume ONFRAY le 09/10/2019
+echo "<h3>Test de creerUneAutorisation : </h3>";
+if ($dao->creerUneAutorisation(2, 1)) $ok = "oui"; else $ok="non";
+echo "<p>la création de l'autorisation de l'utilisateur 2 vers l'utilisateur 1 a réussi : <b>" .$ok. "</b><br>";
+// la même autorisation ne peut pas être enregistrée 2 fois
+if ($dao->creerUneAutorisation(2, 1)) $ok = "oui"; $ok = "non";
+echo "<p>La création de l'autorisation de l'utilisateur 2 vers l'utilisateur 1 a réussi : <b>" .$ok."</b><br>";
 
 
 
