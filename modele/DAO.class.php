@@ -518,7 +518,15 @@ class DAO
     // - Le champ terminee doit être mis à 1
     // - Le champ dateFin doit prendre comme valeur la date du dernier point de la trace (si la trace contient des points) ou la date système (si la trace ne contient aucun point)
     public function terminerUneTrace($idTrace) {
+        $txt_req = "UPDATE tracegps_traces";
+        $txt_req .= " SET terminee = 1,";
+        $txt_req .= " dateFin = curdate()";
+        $txt_req .= " where id = :idTrace";
         
+        $req = $this->cnx->prepare($txt_req);
+        
+        // liaison de la requête et de ses paramètres
+        $req->bindValue("idTrace", utf8_decode($idTrace), PDO::PARAM_INT);
     }
     
     
