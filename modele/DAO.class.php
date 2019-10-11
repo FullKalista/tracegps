@@ -662,6 +662,53 @@ class DAO
         return $lesPointsDeTrace;
     }
     
+    public function getToutesLesTraces(){
+        $txt_req = "Select *";
+        $txt_req .= " from tracegps_traces";
+        
+        $req = $this->cnx->prepare($txt_req);
+        
+        // extraction des données
+        $req->execute();
+        $uneLigne = $req->fetch(PDO::FETCH_OBJ);
+        
+        // construction d'une collection d'objets Point de Trace
+        $toutesLesTraces = array();
+        $lesPointsDeTrace = array();
+        // tant qu'une ligne est trouvée :
+        
+        while ($uneLigne) {
+            $lesPointsDeTrace = $this->getLesPointsDeTrace($uneLigne->id);
+            
+            $unId = utf8_encode($uneLigne->id);
+            $unIdUtilisateur = utf8_encode(($uneLigne->idUtilisateur));
+            $uneHeureDebut = utf8_encode($uneLigne->dateDebut);
+            if($uneLigne->terminee == 1)
+            {   $terminee = true;
+                $uneHeureFin = utf8_encode($uneLigne->dateFin);
+            }
+            if($uneLigne->terminee == 0)
+            {   $terminee = false;
+                $uneHeureFin = null;
+            }
+
+            $uneTrace = new Trace($unId, $uneHeureDebut, $uneHeureFin, $terminee, $unIdUtilisateur);
+            
+            foreach ($lesPointsDeTrace as $unPointDeTrace){
+                $uneTrace->ajouterPoint($unPointDeTrace);
+            }
+            
+            // ajout de l'utilisateur à la collection
+            $toutesLesTraces[] = $uneTrace;
+            // extrait la ligne suivante
+            $uneLigne = $req->fetch(PDO::FETCH_OBJ);
+        }
+        // libère les ressources du jeu de données
+        $req->closeCursor();
+        // fourniture de la collection
+        return $toutesLesTraces;
+    }
+    
     
     
     
