@@ -472,7 +472,7 @@ class DAO
     // Valeur de retour : une collection d'objets Trace
     // Particularité : utiliser la méthode getLesPointsDeTrace($idTrace) pour obtenir les points de chaque trace
     // et les ajouter à chaque objet Trace qui sera ajouté à la collection
-    public function getlesTracesAutorisees($idutilisateur) {
+    public function getLesTracesAutorisees($idutilisateur) {
         /*SELECT *
         FROM tracegps_traces
         where idUtilisateur IN (select idAutorisant
