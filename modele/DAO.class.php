@@ -705,6 +705,9 @@ class DAO
         return $lesPointsDeTrace;
     }
     
+    // fournit la collection  de tous les traces
+    // le résultat est fourni sous forme d'une collection d'objets Trace
+    // modifié par Jim le 27/12/2017
     public function getToutesLesTraces(){
         $txt_req = "Select *";
         $txt_req .= " from tracegps_traces";
@@ -751,7 +754,40 @@ class DAO
         // fourniture de la collection
         return $toutesLesTraces;
     }
-    
+    //Methode pour creer une trace
+    public function creerUneTrace($uneTrace) {
+           
+        
+        // préparation de la requête
+        $txt_req1 = "insert into tracegps_traces (dateDebut, dateFin, terminee, idUtilisateur)";
+        $txt_req1 .= " values (:dateDebut, :dateFin, :terminee, :idUtilisateur)";
+        $req1 = $this->cnx->prepare($txt_req1);
+        // liaison de la requête et de ses paramètres
+        $req1->bindValue(":dateDebut", utf8_encode($uneTrace->getDateHeureDebut()), PDO::PARAM_STR);
+        
+        if($uneTrace->getTerminee() == 0)
+        {
+            $req1->bindValue("dateFin", $uneTrace->getDateHeureFin(), PDO::PARAM_NULL);
+        }
+        if($uneTrace->getTerminee() == 1)
+        {
+            $req1->bindValue("dateFin", $uneTrace->getDateHeureFin(), PDO::PARAM_STR);
+        }
+        
+        $req1->bindValue("terminee", utf8_encode($uneTrace->getTerminee()), PDO::PARAM_STR);
+        
+        $req1->bindValue("idUtilisateur", utf8_encode($uneTrace->getIdUtilisateur()), PDO::PARAM_INT);
+        
+        // exécution de la requête
+        $ok = $req1->execute();
+        // sortir en cas d'échec
+        if ( ! $ok) return false; 
+        
+        // recherche de l'identifiant (auto_increment) qui a été attribué à la trace
+        $unId = $this->cnx->lastInsertId();
+        $uneTrace->setId($unId);
+        return true;
+    }
     
     
     
