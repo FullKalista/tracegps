@@ -360,12 +360,11 @@ class DAO
         $txt_req .= " where niveau = 1";
         $txt_req .= " AND id IN (SELECT idAutorise";
         $txt_req .= " from tracegps_autorisations";
-        $txt_req .= " where idAutorisant = :idUtilisateur)";
+        $txt_req .= " where idAutorisant = 2)";
         $txt_req .= " order by pseudo";
         
         
         $req = $this->cnx->prepare($txt_req);
-        $req->bindValue("idUtilisateur", $idUtilisateur, PDO::PARAM_STR);
         // extraction des données
         $req->execute();
         $uneLigne = $req->fetch(PDO::FETCH_OBJ);
@@ -575,49 +574,7 @@ class DAO
     
     
     
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
+       
     // --------------------------------------------------------------------------------------
     // début de la zone attribuée au développeur 2 (Yvan) : lignes 550 à 749
     // --------------------------------------------------------------------------------------
@@ -668,7 +625,50 @@ class DAO
     }
 
     
-    
+    // fournit la collection  de tous les utilisateurs (de niveau 1)
+    // le résultat est fourni sous forme d'une collection d'objets Point de Trace
+    // modifié par Jim le 27/12/2017
+    public function getLesPointsDeTrace($idTrace) {
+        // préparation de la requête de recherche
+        $txt_req = "Select *";
+        $txt_req .= " from tracegps_points";
+        $txt_req .= " where idTrace = :idTrace";
+        
+        $req = $this->cnx->prepare($txt_req);
+        
+        $req->bindValue("idTrace", $idTrace, PDO::PARAM_INT);
+        // extraction des données
+        $req->execute();
+        $uneLigne = $req->fetch(PDO::FETCH_OBJ);
+        
+        // construction d'une collection d'objets Point de Trace
+        $lesPointsDeTrace = array();
+        // tant qu'une ligne est trouvée :
+        while ($uneLigne) {
+            // création d'un objet Utilisateur
+            $unIdTrace = utf8_encode($uneLigne->idTrace);
+            $unId = utf8_encode($uneLigne->id);
+            $uneLatitude = utf8_encode($uneLigne->latitude);
+            $uneLongitude = utf8_encode($uneLigne->longitude);
+            $uneAltitude = utf8_encode($uneLigne->altitude);
+            $uneHeureDePassage = utf8_encode($uneLigne->dateHeure);
+            $unRythmeCardiaque = utf8_encode($uneLigne->rythmeCardio);
+            $unTempsCumulee = 0 ;
+            $unTempsCumuleeEnChaine = 0 ;
+            $uneDistanceCumulee = 0;
+            $uneVitesse = 0;
+            
+            $unPointDeTrace = new PointDeTrace($unIdTrace, $unId, $uneLatitude, $uneLongitude, $uneAltitude, $uneHeureDePassage, $unRythmeCardiaque, $unTempsCumulee, $unTempsCumuleeEnChaine,$uneDistanceCumulee,$uneVitesse);
+            // ajout de l'utilisateur à la collection
+            $lesPointsDeTrace[] = $unPointDeTrace;
+            // extrait la ligne suivante
+            $uneLigne = $req->fetch(PDO::FETCH_OBJ);
+        }
+        // libère les ressources du jeu de données
+        $req->closeCursor();
+        // fourniture de la collection
+        return $lesPointsDeTrace;
+    }
     
     
     
