@@ -347,7 +347,7 @@ class DAO
     // début de la zone attribuée au développeur 1 (Corentin) : lignes 350 à 549
     // --------------------------------------------------------------------------------------
     
-    // fournit la collection  des utilisateurs (de niveau 1) 
+    // Rôle : fournit la collection  des utilisateurs (de niveau 1) 
     // autorisés à voir les parcours de l'utilisateur $idUtilisateur
     // Paramètres à fournir : $idUtilisateur : identifiant de l'utilisateur autorisant à consulter ses parcours
     // Valeur de retour : collection d'objets Utilisateur
@@ -397,8 +397,28 @@ class DAO
         return $lesUtilisateurs;
     }
     
-    
-    
+    // Rôle : supprime l'autorisation ($idAutorisant, $idAutorise) dans la table tracegps_autorisations
+    // Paramètres à fournir :
+    // $idAutorisant : l'id de l'utilisateur qui autorise
+    // $idAutorise : l'id de l'utilisateur qui est autorisé
+    // Valeur de retour : un booléen
+    // true si la suppression s'est bien passé
+    // false sinon
+    public function supprimerUneAutorisation($idAutorisant, $idAutorise)
+    {
+        if ( ! DAO::autoriseAConsulter($idAutorisant, $idAutorise)) return false;
+        // préparation de la requête de suppression des autorisations
+        $txt_req1 = "delete from tracegps_autorisations" ;
+        $txt_req1 .= " where idAutorisant = :idAutorisant and idAutorise = :idAutorise";
+        $req1 = $this->cnx->prepare($txt_req1);
+        // liaison de la requête et de ses paramètres
+        $req1->bindValue("idAutorisant", utf8_decode($idAutorisant), PDO::PARAM_INT);
+        $req1->bindValue("idAutorise", utf8_decode($idAutorise), PDO::PARAM_INT);
+        // exécution de la requête
+        $ok = $req1->execute();
+
+        return $ok;
+    }
     
     
     
