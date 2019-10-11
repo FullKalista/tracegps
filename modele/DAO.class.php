@@ -884,6 +884,15 @@ class DAO
         return $lesUtilisateurs;
     }
     
+    // Méthode creeruneAutorisation($idAutorisant, $idAutorise)
+    // Le rôle de cette fonction est d'enregistrer l'autorisation ($idAutorisant, $idAutorise) dans la table tracegps_autorisations.
+    // Les paramètres à fournir sont $idAutorisant (l'id de l'utilisateur qui autorise) et $idAutorise (l'id de l'utilisateur qui est autorisé)
+    // La fonction renvoie un booléen qui renvoie true si l'enregistrement s'est bien passé et false sinon
+    public function creerUneAutorisation($idAutorisant, $idAutorise)
+    {
+        
+    }
+    
     
     
     

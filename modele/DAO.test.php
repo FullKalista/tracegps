@@ -18,13 +18,8 @@
 include_once ('DAO.class.php');
 //include_once ('_DAO.mysql.class.php');
 $dao = new DAO();
-<<<<<<< HEAD
-
-
-=======
 
 /*
->>>>>>> branch 'master' of https://github.com/delasalle-sio-couasnon-c/tracegps.git
 // test de la méthode getNiveauConnexion ----------------------------------------------------------
 // modifié par Jim le 12/8/2018
 echo "<h3>Test de getNiveauConnexion : </h3>";
@@ -79,12 +74,7 @@ if ($unUtilisateur) {
 else {
     echo "<p>L'utilisateur admon n'existe pas !</p>";
 }
-<<<<<<< HEAD
- 
-=======
-*/  
->>>>>>> branch 'master' of https://github.com/delasalle-sio-couasnon-c/tracegps.git
-
+*/
 
 /*
 // test de la méthode getTousLesUtilisateurs ------------------------------------------------------
@@ -101,7 +91,7 @@ foreach ($lesUtilisateurs as $unUtilisateur)
 */
 
 
-
+/*
 // test de la méthode creerUnUtilisateur ----------------------------------------------------------
 // modifié par Jim le 12/8/2018
 echo "<h3>Test de creerUnUtilisateur : </h3>";
@@ -114,10 +104,10 @@ if ($ok)
 else {
     echo "<p>Echec lors de l'enregistrement de l'utilisateur !</p>";
 }
+*/
 
 
-
-
+/*
 // test de la méthode modifierMdpUtilisateur ------------------------------------------------------
 // modifié par Jim le 12/8/2018
 echo "<h3>Test de modifierMdpUtilisateur : </h3>";
@@ -137,7 +127,7 @@ if ($unUtilisateur) {
 else {
     echo "<p>L'utilisateur toto n'existe pas !</p>";
 }
-
+*/
 
 /*
 // test de la méthode supprimerUnUtilisateur ------------------------------------------------------
@@ -158,8 +148,6 @@ else {
     echo "<p>Echec lors de la suppression de l'utilisateur toto !</p>";
 }
 */
-//>>>>>>> branch 'master' of https://github.com/delasalle-sio-couasnon-c/tracegps.git
-
 
 /*
 // test de la méthode envoyerMdp ------------------------------------------------------------------
