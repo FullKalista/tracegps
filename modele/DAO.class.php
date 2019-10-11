@@ -472,13 +472,39 @@ class DAO
     // Valeur de retour : une collection d'objets Trace
     // Particularité : utiliser la méthode getLesPointsDeTrace($idTrace) pour obtenir les points de chaque trace
     // et les ajouter à chaque objet Trace qui sera ajouté à la collection
-    public function getLesTracesAutorisees($idutilisateur) {
+    public function getLesTracesAutorisees($idUtilisateur) {
         /*SELECT *
         FROM tracegps_traces
         where idUtilisateur IN (select idAutorisant
             from tracegps_autorisations
             where idAutorise = 2)
             */
+        $txt_req = "Select *";
+        $txt_req .= " from tracegps_traces";
+        $txt_req .= " where idUtilisateur IN (select idAutorisant";
+        $txt_req .= " from tracegps_autorisations";
+        $txt_req .= " where idAutorise = :idUtilisateur)";
+        
+        $req = $this->cnx->prepare($txt_req);
+        
+        // liaison de la requête et de ses paramètres
+        $req->bindValue("idUtilisateur", utf8_decode($idUtilisateur), PDO::PARAM_INT);
+        // extraction des données
+        $req->execute();
+        $uneLigne = $req->fetch(PDO::FETCH_OBJ);
+        
+        $lesTraces = array();
+        
+        // tant qu'une ligne est trouvée :
+        while ($uneLigne) {
+            $lesTraces[] = DAO::getUneTrace($uneLigne->id);
+            $uneLigne = $req->fetch(PDO::FETCH_OBJ);
+        }
+
+        // libère les ressources du jeu de données
+        $req->closeCursor();
+        // fourniture de la collection
+        return $lesTraces;
     }
     
     
