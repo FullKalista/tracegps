@@ -507,10 +507,19 @@ class DAO
         return $lesTraces;
     }
     
-    
-    
-    
-    
+    // Rôle : enregistre la fin de la trace d'identifiant $idTrace dans la table tracegps_traces ainsi 
+    // que la date de fin
+    // Paramètres à fournir :
+    // $idTrace : l'identifiant de la trace à terminer
+    // Valeur de retour : un booléen
+    // true si la modification s'est bien passée
+	// false sinon
+    // Particularités :
+    // - Le champ terminee doit être mis à 1
+    // - Le champ dateFin doit prendre comme valeur la date du dernier point de la trace (si la trace contient des points) ou la date système (si la trace ne contient aucun point)
+    public function terminerUneTrace($idTrace) {
+        
+    }
     
     
     
