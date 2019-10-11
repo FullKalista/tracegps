@@ -466,12 +466,68 @@ class DAO
         }
     }
     
+    // Rôle : fournit la collection des traces que l'utilisateur $idUtilisateur a le droit de consulter
+    // Paramètres à fournir :
+    // $idUtilisateur : identifiant de l'utilisateur dont on veut obtenir les traces qu'il peut consulter
+    // Valeur de retour : une collection d'objets Trace
+    // Particularité : utiliser la méthode getLesPointsDeTrace($idTrace) pour obtenir les points de chaque trace
+    // et les ajouter à chaque objet Trace qui sera ajouté à la collection
+    public function getLesTracesAutorisees($idUtilisateur) {
+        /*SELECT *
+        FROM tracegps_traces
+        where idUtilisateur IN (select idAutorisant
+            from tracegps_autorisations
+            where idAutorise = 2)
+            */
+        $txt_req = "Select *";
+        $txt_req .= " from tracegps_traces";
+        $txt_req .= " where idUtilisateur IN (select idAutorisant";
+        $txt_req .= " from tracegps_autorisations";
+        $txt_req .= " where idAutorise = :idUtilisateur)";
+        
+        $req = $this->cnx->prepare($txt_req);
+        
+        // liaison de la requête et de ses paramètres
+        $req->bindValue("idUtilisateur", utf8_decode($idUtilisateur), PDO::PARAM_INT);
+        // extraction des données
+        $req->execute();
+        $uneLigne = $req->fetch(PDO::FETCH_OBJ);
+        
+        $lesTraces = array();
+        
+        // tant qu'une ligne est trouvée :
+        while ($uneLigne) {
+            $lesTraces[] = DAO::getUneTrace($uneLigne->id);
+            $uneLigne = $req->fetch(PDO::FETCH_OBJ);
+        }
+
+        // libère les ressources du jeu de données
+        $req->closeCursor();
+        // fourniture de la collection
+        return $lesTraces;
+    }
     
-    
-    
-    
-    
-    
+    // Rôle : enregistre la fin de la trace d'identifiant $idTrace dans la table tracegps_traces ainsi 
+    // que la date de fin
+    // Paramètres à fournir :
+    // $idTrace : l'identifiant de la trace à terminer
+    // Valeur de retour : un booléen
+    // true si la modification s'est bien passée
+	// false sinon
+    // Particularités :
+    // - Le champ terminee doit être mis à 1
+    // - Le champ dateFin doit prendre comme valeur la date du dernier point de la trace (si la trace contient des points) ou la date système (si la trace ne contient aucun point)
+    public function terminerUneTrace($idTrace) {
+        $txt_req = "UPDATE tracegps_traces";
+        $txt_req .= " SET terminee = 1,";
+        $txt_req .= " dateFin = curdate()";
+        $txt_req .= " where id = :idTrace";
+        
+        $req = $this->cnx->prepare($txt_req);
+        
+        // liaison de la requête et de ses paramètres
+        $req->bindValue("idTrace", utf8_decode($idTrace), PDO::PARAM_INT);
+    }
     
     
     
