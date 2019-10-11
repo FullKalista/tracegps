@@ -420,9 +420,17 @@ class DAO
         return $ok;
     }
     
-    
-    
-    
+    // Rôle : fournit un objet Trace à partir de son identifiant $idTrace
+    // Paramètres à fournir :
+    // $idTrace : l'identifiant de la trace
+    // Valeur de retour : un objet
+    // un objet de la classe Trace si $idTrace existe
+    // l'objet null si $idTrace n'existe pas
+    // Particularité : utiliser la méthode getLesPointsDeTrace($idTrace) pour obtenir les points de la trace 
+    // et les ajouter à l'objet Trace qui sera retourné
+    public function getUneTrace($idTrace) {
+        
+    }
     
     
     

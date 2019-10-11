@@ -53,6 +53,23 @@ echo "<p>La création de l'autorisation de l'utilisateur 2 vers l'utilisateur 1 
 if ($dao->supprimerUneAutorisation(2, 1)) $ok = "oui"; else $ok = "non";
 echo "<p>La suppression de l'autorisation de l'utilisateur 2 vers l'utilisateur 1 a réussi : <b>" . $ok . "</b><br>";
 
+// test de la méthode getUneTrace -----------------------------------------------------------------
+// modifié par Jim le 14/8/2018
+echo "<h3>Test de getUneTrace : </h3>";
+$uneTrace = $dao->getUneTrace(2);
+if ($uneTrace) {
+    echo "<p>La trace 2 existe : <br>" . $uneTrace->toString() . "</p>";
+}
+else {
+    echo "<p>La trace 2 n'existe pas !</p>";
+}
+$uneTrace = $dao->getUneTrace(100);
+if ($uneTrace) {
+    echo "<p>La trace 100 existe : <br>" . $uneTrace->toString() . "</p>";
+}
+else {
+    echo "<p>La trace 100 n'existe pas !</p>";
+}
 
 
 // ferme la connexion à MySQL :
