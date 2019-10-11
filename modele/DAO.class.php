@@ -598,14 +598,13 @@ class DAO
 
     
     // fournit la collection  de tous les utilisateurs (de niveau 1)
-    // le résultat est fourni sous forme d'une collection d'objets Utilisateur
+    // le résultat est fourni sous forme d'une collection d'objets Point de Trace
     // modifié par Jim le 27/12/2017
     public function getLesPointsDeTrace($idTrace) {
         // préparation de la requête de recherche
         $txt_req = "Select *";
         $txt_req .= " from tracegps_points";
         $txt_req .= " where idTrace = :idTrace";
-        $txt_req .= " order by pseudo";
         
         $req = $this->cnx->prepare($txt_req);
         
@@ -614,31 +613,33 @@ class DAO
         $req->execute();
         $uneLigne = $req->fetch(PDO::FETCH_OBJ);
         
-        // construction d'une collection d'objets Utilisateur
-        $lesUtilisateurs = array();
+        // construction d'une collection d'objets Point de Trace
+        $lesPointsDeTrace = array();
         // tant qu'une ligne est trouvée :
         while ($uneLigne) {
             // création d'un objet Utilisateur
+            $unIdTrace = utf8_encode($uneLigne->idTrace);
             $unId = utf8_encode($uneLigne->id);
-            $unPseudo = utf8_encode($uneLigne->pseudo);
-            $unMdpSha1 = utf8_encode($uneLigne->mdpSha1);
-            $uneAdrMail = utf8_encode($uneLigne->adrMail);
-            $unNumTel = utf8_encode($uneLigne->numTel);
-            $unNiveau = utf8_encode($uneLigne->niveau);
-            $uneDateCreation = utf8_encode($uneLigne->dateCreation);
-            $unNbTraces = utf8_encode($uneLigne->nbTraces);
-            $uneDateDerniereTrace = utf8_encode($uneLigne->dateDerniereTrace);
+            $uneLatitude = utf8_encode($uneLigne->latitude);
+            $uneLongitude = utf8_encode($uneLigne->longitude);
+            $uneAltitude = utf8_encode($uneLigne->altitude);
+            $uneHeureDePassage = utf8_encode($uneLigne->dateHeure);
+            $unRythmeCardiaque = utf8_encode($uneLigne->rythmeCardio);
+            $unTempsCumulee = 0 ;
+            $unTempsCumuleeEnChaine = 0 ;
+            $uneDistanceCumulee = 0;
+            $uneVitesse = 0;
             
-            $unUtilisateur = new Utilisateur($unId, $unPseudo, $unMdpSha1, $uneAdrMail, $unNumTel, $unNiveau, $uneDateCreation, $unNbTraces, $uneDateDerniereTrace);
+            $unPointDeTrace = new PointDeTrace($unIdTrace, $unId, $uneLatitude, $uneLongitude, $uneAltitude, $uneHeureDePassage, $unRythmeCardiaque, $unTempsCumulee, $unTempsCumuleeEnChaine,$uneDistanceCumulee,$uneVitesse);
             // ajout de l'utilisateur à la collection
-            $lesUtilisateurs[] = $unUtilisateur;
+            $lesPointsDeTrace[] = $unPointDeTrace;
             // extrait la ligne suivante
             $uneLigne = $req->fetch(PDO::FETCH_OBJ);
         }
         // libère les ressources du jeu de données
         $req->closeCursor();
         // fourniture de la collection
-        return $lesUtilisateurs;
+        return $lesPointsDeTrace;
     }
     
     
