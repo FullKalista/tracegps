@@ -71,6 +71,26 @@ else {
     echo "<p>La trace 100 n'existe pas !</p>";
 }
 
+// test de la méthode getLesTracesAutorisees($idUtilisateur) --------------------------------------
+// modifié par Jim le 14/8/2018
+echo "<h3>Test de getLesTracesAutorisees(idUtilisateur) : </h3>";
+$lesTraces = $dao->getLesTracesAutorisees(2);
+$nbReponses = sizeof($lesTraces);
+echo "<p>Nombre de traces autorisées à l'utilisateur 2 : " . $nbReponses . "</p>";
+// affichage des traces
+foreach ($lesTraces as $uneTrace)
+{   echo ($uneTrace->toString());
+echo ('<br>');
+}
+$lesTraces = $dao->getLesTracesAutorisees(3);
+$nbReponses = sizeof($lesTraces);
+echo "<p>Nombre de traces autorisées à l'utilisateur 3 : " . $nbReponses . "</p>";
+// affichage des traces
+foreach ($lesTraces as $uneTrace)
+{   echo ($uneTrace->toString());
+echo ('<br>');
+}
+
 
 // ferme la connexion à MySQL :
 unset($dao);

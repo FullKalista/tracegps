@@ -466,7 +466,20 @@ class DAO
         }
     }
     
-    
+    // Rôle : fournit la collection des traces que l'utilisateur $idUtilisateur a le droit de consulter
+    // Paramètres à fournir :
+    // $idUtilisateur : identifiant de l'utilisateur dont on veut obtenir les traces qu'il peut consulter
+    // Valeur de retour : une collection d'objets Trace
+    // Particularité : utiliser la méthode getLesPointsDeTrace($idTrace) pour obtenir les points de chaque trace
+    // et les ajouter à chaque objet Trace qui sera ajouté à la collection
+    public function getlesTracesAutorisees($idutilisateur) {
+        /*SELECT *
+        FROM tracegps_traces
+        where idUtilisateur IN (select idAutorisant
+            from tracegps_autorisations
+            where idAutorise = 2)
+            */
+    }
     
     
     
