@@ -926,7 +926,39 @@ class DAO
     }
         
     
-    
+    // Méthode supprimerUneTrace($idTrace)
+    // Le rôle de cette méthode est de supprimer la trace de l'identifiant idTrace dans la table tracegps_traces
+    // ainsi que tous ses points dans la table tracegps_points
+    // Le paramètre à fournir est $idTrace qui correspond à l'identifiant de la trace à supprimer
+    // Cette méthode retourne un booléen qui renvoie true si la suppression s'est bien passée et false sinon
+    public function supprimerUneTrace($idTrace) {
+        $uneTrace = $this->getUneTrace($idTrace);
+        if ($uneTrace == null) {
+            return false;
+        }
+        else {
+            $idTrace = $uneTrace->getId();
+            
+            // préparation de la requête de suppression des points
+            $txt_req1 = "delete from tracegps_points" ;
+            $txt_req1 .= " where idTrace = :idTrace";
+            $req1 = $this->cnx->prepare($txt_req1);
+            // liaison de la requête et de ses paramètres
+            $req1->bindValue("idTrace", utf8_decode($idTrace), PDO::PARAM_INT);
+            // exécution de la requête
+            $ok = $req1->execute();
+            
+            // préparation de la requête de suppression de l'utilisateur
+            $txt_req2 = "delete from tracegps_traces" ;
+            $txt_req2 .= " where id = :idTrace";
+            $req2 = $this->cnx->prepare($txt_req2);
+            // liaison de la requête et de ses paramètres
+            $req2->bindValue("idTrace", utf8_decode($idTrace), PDO::PARAM_STR);
+            // exécution de la requête
+            $ok = $req2->execute();
+            return $ok;
+        }
+    }
     
     
     
