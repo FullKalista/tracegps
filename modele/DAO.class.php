@@ -1099,8 +1099,21 @@ class DAO
     // Les paramètres à fournir sont $idAutorisant (l'id de l'utilisateur qui autorise) et $idAutorise (l'id de l'utilisateur qui est autorisé)
     // La fonction renvoie un booléen qui renvoie true si l'enregistrement s'est bien passé et false sinon
     public function creerUneAutorisation($idAutorisant, $idAutorise)
-    {
-        
+    {       
+            // préparation de la requête
+            $txt_req1 = "insert into tracegps_autorisations (idAutorisant, idAutorise)";
+            $txt_req1 .= " values (:idAutorisant, :idAutorise)";
+            $req1 = $this->cnx->prepare($txt_req1);
+            
+            // liaison de la requête et de ses paramètres
+            $req1->bindValue("idAutorisant", $idAutorisant, PDO::PARAM_INT);
+            $req1->bindValue("idAutorise", $idAutorise, PDO::PARAM_INT);
+            
+            // exécution de la requête
+            $ok = $req1->execute();            
+            
+            // sortir en cas d'échec
+            return $ok;
     }
     
     
