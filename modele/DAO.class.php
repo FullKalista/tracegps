@@ -821,21 +821,28 @@ class DAO
         // liaison de la requête et de ses paramètres
         $req1->bindValue(":dateDebut", utf8_encode($uneTrace->getDateHeureDebut()), PDO::PARAM_STR);
         
-        if($uneTrace->getTerminee() == 0)
+        if($uneTrace->getTerminee() == false)
         {
-            $req1->bindValue("dateFin", $uneTrace->getDateHeureFin(), PDO::PARAM_NULL);
+            $req1->bindValue("dateFin", null, PDO::PARAM_NULL);
+            $req1->bindValue("terminee", 0 , PDO::PARAM_INT);
+            
         }
-        if($uneTrace->getTerminee() == 1)
+        if($uneTrace->getTerminee() == true)
         {
             $req1->bindValue("dateFin", $uneTrace->getDateHeureFin(), PDO::PARAM_STR);
+            $req1->bindValue("terminee", 1 , PDO::PARAM_INT);
         }
         
-        $req1->bindValue("terminee", utf8_encode($uneTrace->getTerminee()), PDO::PARAM_STR);
         
         $req1->bindValue("idUtilisateur", utf8_encode($uneTrace->getIdUtilisateur()), PDO::PARAM_INT);
         
         // exécution de la requête
         $ok = $req1->execute();
+       
+        
+        //print_r($req1->errorInfo());
+        
+        
         // sortir en cas d'échec
         if ( ! $ok) return false; 
         
