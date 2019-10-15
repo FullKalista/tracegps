@@ -556,6 +556,8 @@ class DAO
     // début de la zone attribuée au développeur 2 (Yvan) : lignes 550 à 749
     // --------------------------------------------------------------------------------------
     //Rôle : indique si $adrMail existe dans la table tracegps_utilisateurs
+    //On fourni l'adresse à tester en paramètres
+    //On renvoie un boléen : True si l'adresse existe, sinon false.
     public function existeAdrMailUtilisateur($adrMail) {
         // préparation de la requête de recherche
         $txt_req = "Select count(*) from tracegps_utilisateurs where adrMail = :adrMail";
@@ -578,7 +580,10 @@ class DAO
     }
     
     
-    //Rôle : indique si l'utilisateur $idAutorisant autorise l'utilisateur $idAutorise à consulter ses traces
+    //Rôle : indique si l'utilisateur $idAutorisant 
+    //autorise l'utilisateur $idAutorise à consulter ses traces
+    //On fourni les ID des utilisateurs autorisant et autorisés
+    //On renvoie un boléen : True si M.X autorise M.Y à consulter ses traces, sinon false.
     public function autoriseAConsulter($idAutorisant, $idAutorisé){
         $txt_req = "Select count(*) from tracegps_autorisations where idAutorise = :idAutorise AND idAutorisant = :idAutorisant";
         $req = $this->cnx->prepare($txt_req);
@@ -604,7 +609,6 @@ class DAO
     
     // fournit la collection  de tous les utilisateurs (de niveau 1)
     // le résultat est fourni sous forme d'une collection d'objets Point de Trace
-    // modifié par Jim le 27/12/2017
     public function getLesPointsDeTrace($idTrace) {
         // préparation de la requête de recherche
         $txt_req = "Select *";
@@ -649,7 +653,6 @@ class DAO
     
     // fournit la collection  de tous les traces
     // le résultat est fourni sous forme d'une collection d'objets Trace
-    // modifié par Jim le 27/12/2017
     public function getToutesLesTraces(){
         $txt_req = "Select *";
         $txt_req .= " from tracegps_traces";
@@ -696,7 +699,15 @@ class DAO
         // fourniture de la collection
         return $toutesLesTraces;
     }
-    //Methode pour creer une trace
+    //Rôle : enregistre la trace $uneTrace dans la table tracegps_traces 
+    //et met à jour l'objet $uneTrace 
+    //avec l'identifiant (auto_increment) attribué par le SGBD
+    //On renvoie un boléen : True si l'enrengistrement s'est bien passé, False s'il ya eu
+    //un problème.
+    //On fourni en paramètre la trace à enrengistrer.
+    //- Si la date de fin est nulle (cas d'une trace non terminée), le champ dateFin prendra une valeur nulle (PDO::PARAM_NULL) ; sinon il prendra une valeur chaine (PDO::PARAM_STR).
+    //- On n'enregistre pas les points de la trace, même si l'objet $uneTrace en contient.
+    
     public function creerUneTrace($uneTrace) {
            
         
@@ -985,8 +996,21 @@ class DAO
     // Les paramètres à fournir sont $idAutorisant (l'id de l'utilisateur qui autorise) et $idAutorise (l'id de l'utilisateur qui est autorisé)
     // La fonction renvoie un booléen qui renvoie true si l'enregistrement s'est bien passé et false sinon
     public function creerUneAutorisation($idAutorisant, $idAutorise)
-    {
-        
+    {       
+            // préparation de la requête
+            $txt_req1 = "insert into tracegps_autorisations (idAutorisant, idAutorise)";
+            $txt_req1 .= " values (:idAutorisant, :idAutorise)";
+            $req1 = $this->cnx->prepare($txt_req1);
+            
+            // liaison de la requête et de ses paramètres
+            $req1->bindValue("idAutorisant", $idAutorisant, PDO::PARAM_INT);
+            $req1->bindValue("idAutorise", $idAutorise, PDO::PARAM_INT);
+            
+            // exécution de la requête
+            $ok = $req1->execute();            
+            
+            // sortir en cas d'échec
+            return $ok;
     }
     
     
