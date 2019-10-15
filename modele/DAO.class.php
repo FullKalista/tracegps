@@ -752,193 +752,6 @@ class DAO
     
     
     
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
     // --------------------------------------------------------------------------------------
     // début de la zone attribuée au développeur 3 (Guillaume) : lignes 750 à 949
     // --------------------------------------------------------------------------------------
@@ -1013,29 +826,50 @@ class DAO
             return $ok;
     } 
     
-    // Méthode creerUnPointDeTrace($unPointDeTrace
+    // Méthode creerUnPointDeTrace($unPointDeTrace)
     // Le rôle de cette méthode est d'enregistrer le point $unPointDeTrace dans la BDD
     // Le paramètre à fournir est $unPointDeTrace qui correspond au point de trace à enregistrer
     // Cette méthode retourne un booléen qui renvoie :
     // True si l'enregistrement est bien passé
     // False sinon
-    // La particularité de cette méthode est que si le premier point d'une trace ($id = 1), il faut modifier la date de début de trace en lui affectant la date du point
-    public function creerUnPointDeTrace
-    {
+    // La particularité de cette méthode est que si le point enregistré est le premier point d'une trace ($id = 1), il faut modifier la date de début de trace en lui affectant la date du point
+    public function creerUnPointDeTrace($unPointDeTrace) {
         
+        
+        // préparation de la requête
+        $txt_req1 = "insert into tracegps_points (idTrace, id, latitude, longitude, altitude, dateHeure, rythmeCardio)";
+        $txt_req1 .= " values (:idTrace, :id, :latitude, :longitude, :altitude, :dateHeure, :rythmeCardio)";
+        $req1 = $this->cnx->prepare($txt_req1);
+        // liaison de la requête et de ses paramètres
+        $req1->bindValue(":idTrace", utf8_encode($unPointDeTrace->getIdTrace()), PDO::PARAM_INT);
+        $req1->bindValue(":id", utf8_encode($unPointDeTrace->getId()), PDO::PARAM_INT);
+        $req1->bindValue(":latitude", utf8_encode($unPointDeTrace->getLatitude()), PDO::PARAM_STR);
+        $req1->bindValue(":longitude", utf8_encode($unPointDeTrace->getLongitude()), PDO::PARAM_STR);
+        $req1->bindValue(":altitude", utf8_encode($unPointDeTrace->getAltitude()), PDO::PARAM_STR);
+        $req1->bindValue(":dateHeure", utf8_encode($unPointDeTrace->getDateHeure()), PDO::PARAM_STR);
+        $req1->bindValue(":rythmeCardio", utf8_encode($unPointDeTrace->getRythmeCardio()), PDO::PARAM_INT);
+        
+        $laTrace = DAO::getUneTrace($unPointDeTrace->getIdTrace());
+        
+        if ( $unPointDeTrace->getId() == 1)
+        {
+            $laTrace->setDateHeureDebut($unPointDeTrace->getDateHeure());
+        }
+        // exécution de la requête
+        $ok = $req1->execute();
+        
+        
+        //print_r($req1->errorInfo());
+        
+        
+        // sortir en cas d'échec
+        if ( ! $ok) return false;
+        
+        // recherche de l'identifiant (auto_increment) qui a été attribué à la trace
+        $unId = $this->cnx->lastInsertId();
+        $unPointDeTrace->setId($unId);
+        return true;
     }
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
         
     
     

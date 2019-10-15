@@ -53,6 +53,25 @@ if ($dao->creerUneAutorisation(2, 1)) $ok = "oui"; $ok = "non";
 echo "<p>La création de l'autorisation de l'utilisateur 2 vers l'utilisateur 1 a réussi : <b>" .$ok."</b><br>";
 
 
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 // Test de la méthode creerUnPointDeTrace
 // modifié par Guillaume ONFRAY le 15/10/2019
 echo "<h3>Test de creerUnPointDeTrace : </h3>";
@@ -78,6 +97,15 @@ $lesPoints = $dao->getLesPointsDeTrace(1);
 $nbPoints = sizeof($lesPoints);
 echo "<p>Nombre de points de la trace 1 : " . $nbPoints . "</p>";
 echo ('<br>');
+
+
+
+
+
+
+
+
+
 
 
 
