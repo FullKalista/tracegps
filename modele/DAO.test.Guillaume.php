@@ -54,24 +54,6 @@ echo "<p>La création de l'autorisation de l'utilisateur 2 vers l'utilisateur 1 
 
 
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 // Test de la méthode creerUnPointDeTrace
 // modifié par Guillaume ONFRAY le 15/10/2019
 echo "<h3>Test de creerUnPointDeTrace : </h3>";
@@ -99,18 +81,19 @@ echo "<p>Nombre de points de la trace 1 : " . $nbPoints . "</p>";
 echo ('<br>');
 
 
-
-
-
-
-
-
-
-
-
-
-
-
+// test de la méthode getLesTraces($idUtilisateur)
+// Modifié par Guillaume ONFRAY le 15/10/2019
+// test de la méthode getLesTraces($idUtilisateur) ------------------------------------------------
+// modifié par Jim le 14/8/2018
+echo "<h3>Test de getLesTraces(idUtilisateur) : </h3>";
+$lesTraces = $dao->getLesTraces(2);
+$nbReponses = sizeof($lesTraces);
+echo "<p>Nombre de traces de l'utilisateur 2 : " . $nbReponses . "</p>";
+// affichage des traces
+foreach ($lesTraces as $uneTrace)
+{   echo ($uneTrace->toString());
+echo ('<br>');
+}
 
 // ferme la connexion à MySQL :
 unset($dao);
