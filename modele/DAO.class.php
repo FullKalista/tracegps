@@ -1125,6 +1125,18 @@ class DAO
             
             // sortir en cas d'échec
             return $ok;
+    } 
+    
+    // Méthode creerUnPointDeTrace($unPointDeTrace
+    // Le rôle de cette méthode est d'enregistrer le point $unPointDeTrace dans la BDD
+    // Le paramètre à fournir est $unPointDeTrace qui correspond au point de trace à enregistrer
+    // Cette méthode retourne un booléen qui renvoie :
+    // True si l'enregistrement est bien passé
+    // False sinon
+    // La particularité de cette méthode est que si le premier point d'une trace ($id = 1), il faut modifier la date de début de trace en lui affectant la date du point
+    public function creerUnPointDeTrace
+    {
+        
     }
     
     
