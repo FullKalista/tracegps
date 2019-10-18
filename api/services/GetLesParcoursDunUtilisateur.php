@@ -42,7 +42,7 @@ $lesTraces = array();
 // La méthode HTTP utilisée doit être GET
 if ($this->getMethodeRequete() != "GET")
 {	$msg = "Erreur : méthode HTTP incorrecte.";
-$code_reponse = 406;
+    $code_reponse = 406;
 }
 else {
     // Les paramètres doivent être présents
@@ -63,7 +63,7 @@ else {
                 $code_reponse = 401;
             }
             else {
-                if ( $dao->autoriseAConsulter($pseudoConsulte, $pseudo) && $pseudo != $pseudoConsulte) {
+                if ( ! $dao->autoriseAConsulter($dao->getUnUtilisateur($pseudoConsulte)->getId(), $dao->getUnUtilisateur($pseudo)->getId()) && $pseudo != $pseudoConsulte) {
                     $msg = "Erreur : vous n'êtes pas autorisé par cet utilisateur.";
                     $code_reponse = 401;
                 }
@@ -254,7 +254,7 @@ function creerFluxJSON($msg, $lesTraces)
             if ($uneTrace->getTerminee() == 1) {
                 $unObjetTrace["dateHeureFin"] = $uneTrace->getDateHeureFin();
             }
-            $unObjetTrace["distance"] = round($uneTrace->getDistanceTotale(), 3);
+            $unObjetTrace["distance"] = number_format($uneTrace->getDistanceTotale(), 1);
             $unObjetTrace["idUtilisateur"] = $uneTrace->getIdUtilisateur();
             $lesObjetsDuTableau[] = $unObjetTrace;
         }
