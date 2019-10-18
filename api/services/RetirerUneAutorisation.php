@@ -25,44 +25,49 @@ $dao = new DAO();
 //Récupération du pseudo de l'utilisateur
 $pseudo = ( empty($this->request['pseudo'])) ? "" : $this->request['pseudo'];
 $mdp = ( empty($this->request['mdp'])) ? "" : $this->request['mdp'];
-$pseudoDestinataire = ( empty($this->request['pseudoDestinataire'])) ? "" : $this->request['pseudoDestinataire'];
+$pseudoARetirer = ( empty($this->request['pseudoARetirer'])) ? "" : $this->request['pseudoARetirer'];
 $texteMessage = ( empty($this->request['texteMessage'])) ? "" : $this->request['texteMessage'];
-$nomPrenom = ( empty($this->request['nomPrenom'])) ? "" : $this->request['nomPrenom'];
 $lang = ( empty($this->request['lang'])) ? "" : $this->request['lang'];
 
 
 
-if ( $pseudo == ""|| $mdp == ""|| $pseudoDestinataire == ""|| $texteMessage == ""|| $nomPrenom == "") {
+if ( $pseudo == ""|| $mdp == ""|| $pseudoARetirer == ""|| $texteMessage == "") {
     $msg = "Erreur : données incomplètes.";
     $code_reponse = 400;
 }
 else {
     
     
-    if ($dao->getNiveauConnexion($pseudo, $mdp) == 0 ) {
+    if ($niveauConnexion = $dao->getNiveauConnexion($pseudo, $mdp) == 0 ) {
         $msg = "Erreur : authentification incorrecte.";
         $code_reponse = 401;
     }
     else {
         
-        if ( $dao->existePseudoUtilisateur($pseudoDestinataire) == false ) {
+        if ( $dao->existePseudoUtilisateur($pseudoARetirer) == false ) {
             $msg = "Erreur : pseudo utilisateur inexistant.";
             $code_reponse = 500;
         }
         else {
-            $user1 = $dao->getUnUtilisateur($pseudo);
-            $adresseDemandeur = $user1->getAdrMail();
-            $user2 = $dao->getUnUtilisateur($pseudoDestinataire);
-            $adresseAutreMembre = $user2->getAdrMail();
-            $sujet = "Demande d'autorisation de la part d'un utilisateur du système TraceGPS";
-            // envoie un courriel  à l'utilisateur avec son nouveau mot de passe
-            $ok = Outils::envoyerMail($adresseAutreMembre, $sujet, $texteMessage, $adresseDemandeur);
-            if ( ! $ok ) {
-                $msg = "Enregistrement effectué ; l'envoi du courriel  de confirmation a rencontré un problème.";
+            if ( $dao->autoriseAConsulter($idAutorisant, $idAutorisé) == false) {
+                $msg = "Erreur : l'autorisation n'était pas accordée";
                 $code_reponse = 500;
             }
             else {
-                $msg = "Enregistrement effectué ; vous allez recevoir un courriel de confirmation.";
+                $user1 = $dao->getUnUtilisateur($pseudo);
+                $adresseDemandeur = $user1->getAdrMail();
+                $user2 = $dao->getUnUtilisateur($pseudoARetirer);
+                $adresseAutreMembre = $user2->getAdrMail();
+                $sujet = "Demande de retrait d'une autorisation de la part d'un utilisateur du système TraceGPS";
+                // envoie un courriel  à l'utilisateur à qui on a supprimé l'autorisation
+                $ok = Outils::envoyerMail($adresseAutreMembre, $sujet, $texteMessage, $adresseDemandeur);
+            }
+            if ( ! $ok ) {
+                $msg = "Suppression de l'autorisation effectuée; l'envoi du courriel  de confirmation a rencontré un problème.";
+                $code_reponse = 500;
+            }
+            else {
+                $msg = "Suppression de l'autorisation effectuée; vous allez recevoir un courriel de confirmation.";
                 $code_reponse = 200;
             }
         }
@@ -111,7 +116,7 @@ function creerFluxXML($msg)
     $doc->encoding = 'UTF-8';
     
     // crée un commentaire et l'encode en UTF-8
-    $elt_commentaire = $doc->createComment('Service web DemanderUneAutorisation - BTS SIO - Lycée De La Salle - Rennes');
+    $elt_commentaire = $doc->createComment('Service web RetirerUneAutorisation - BTS SIO - Lycée De La Salle - Rennes');
     // place ce commentaire à la racine du document XML
     $doc->appendChild($elt_commentaire);
     
