@@ -109,7 +109,7 @@ exit;
 // ================================================================================================
 
 // création du flux XML en sortie
-function creerFluxXML($msg, $idPoint)
+function creerFluxXML($msg)
 {
     /* Exemple de code XML
     <?xml version="1.0" encoding="UTF-8"?>
@@ -149,7 +149,7 @@ function creerFluxXML($msg, $idPoint)
 // ================================================================================================
 
 // création du flux JSON en sortie
-function creerFluxJSON($msg, $idPoint)
+function creerFluxJSON($msg)
 {
     /* Exemple de code JSON
     {
