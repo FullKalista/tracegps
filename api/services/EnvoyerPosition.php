@@ -44,6 +44,7 @@ $longitude = ( empty($this->request['longitude'])) ? "" : $this->request['longit
 $altitude = ( empty($this->request['altitude'])) ? "" : $this->request['altitude'];
 $rythmeCardio = ( empty($this->request['rythmeCardio'])) ? "" : $this->request['rythmeCardio'];
 $lang = ( empty($this->request['lang'])) ? "" : $this->request['lang'];
+$idPoint = null;
 
 // "xml" par défaut si le paramètre lang est absent ou incorrect
 if ($lang != "json") $lang = "xml";
@@ -83,7 +84,16 @@ else {
                         $idPoint = $dao->getUneTrace($idTrace)->getNombrePoints() + 1;
                         $unPoint = new PointDeTrace($idTrace, $idPoint, $latitude, $longitude, $altitude, $dateHeure, $rythmeCardio, 0, 0, 0);
                         $dao->getUneTrace($idTrace)->ajouterPoint($unPoint);
-                        $dao->creerUnPointDeTrace($unPoint);
+                        $ok = $dao->creerUnPointDeTrace($unPoint);
+                        
+                        if ( ! $ok) {
+                            $msg = "Erreur : problème lors de l'enregistrement du point.";
+                            $code_reponse = 500;
+                        }
+                        else {
+                            $msg = "Point créé.";
+                            $code_reponse = 201;
+                        }
                     }
                 }
             }
@@ -96,11 +106,11 @@ unset($dao);
 // création du flux en sortie
 if ($lang == "xml") {
     $content_type = "application/xml; charset=utf-8";      // indique le format XML pour la réponse
-    $donnees = creerFluxXML ($msg);
+    $donnees = creerFluxXML ($msg, $idPoint);
 }
 else {
     $content_type = "application/json; charset=utf-8";      // indique le format Json pour la réponse
-    $donnees = creerFluxJSON ($msg);
+    $donnees = creerFluxJSON ($msg, $idPoint);
 }
 
 // envoi de la réponse HTTP
@@ -112,15 +122,17 @@ exit;
 // ================================================================================================
 
 // création du flux XML en sortie
-function creerFluxXML($msg)
+function creerFluxXML($msg, $idPoint)
 {
     /* Exemple de code XML
-     <?xml version="1.0" encoding="UTF-8"?>
-     <!--Service web CreerUnUtilisateur - BTS SIO - Lycée De La Salle - Rennes-->
-     <data>
-     <reponse>Erreur : pseudo trop court (8 car minimum) ou déjà existant .</reponse>
-     </data>
-     */
+    <?xml version="1.0" encoding="UTF-8"?>
+    <data>
+      <reponse>Point créé.</reponse>
+      <donnees>
+          <id>6</id>
+      </donnees>
+    </data>
+    */
     
     // crée une instance de DOMdocument (DOM : Document Object Model)
     $doc = new DOMDocument();
@@ -142,6 +154,16 @@ function creerFluxXML($msg)
     $elt_reponse = $doc->createElement('reponse', $msg);
     $elt_data->appendChild($elt_reponse);
     
+    // place l'élément 'donnees' après l'élément 'reponse'
+    $elt_donnees = $doc->createElement('donnees');
+    $elt_data->appendChild($elt_reponse);
+    
+    if ($idPoint != null) {
+        // place l'élément 'id' juste après l'élément 'donnees'
+        $elt_id = $doc->createElement('id', $idPoint);
+        $elt_donnees->appendChild($elt_id);
+    }
+
     // Mise en forme finale
     $doc->formatOutput = true;
     
@@ -152,18 +174,28 @@ function creerFluxXML($msg)
 // ================================================================================================
 
 // création du flux JSON en sortie
-function creerFluxJSON($msg)
+function creerFluxJSON($msg, $idPoint)
 {
     /* Exemple de code JSON
-     {
-     "data": {
-     "reponse": "Erreur : pseudo trop court (8 car minimum) ou d\u00e9j\u00e0 existant."
-     }
-     }
-     */
+    {
+        "data": {
+            "reponse": "Point créé."
+            "donnees": {
+                "id": 7
+            }
+        }
+    }
+    */
     
     // construction de l'élément "data"
     $elt_data = ["reponse" => $msg];
+    
+    if ($idPoint != null) {
+        $elt_data = ["donnees" => $idPoint];
+    }
+    else {
+        $elt_data = ["donnees" => []];
+    }
     
     // construction de la racine
     $elt_racine = ["data" => $elt_data];
