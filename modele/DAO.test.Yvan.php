@@ -30,7 +30,7 @@
 include_once ('DAO.class.php');
 $dao = new DAO();
 
-/*
+
 // test de la méthode existeAdrMailUtilisateur ----------------------------------------------------
 // modifié par Jim le 12/8/2018
 echo "<h3>Test de existeAdrMailUtilisateur : </h3>";
@@ -38,7 +38,7 @@ if ($dao->existeAdrMailUtilisateur("admin@gmail.com")) $existe = "oui"; else $ex
 echo "<p>Existence de l'utilisateur 'admin@gmail.com' : <b>" . $existe . "</b><br>";
 if ($dao->existeAdrMailUtilisateur("delasalle.sio.couasnon.c@gmail.com")) $existe = "oui"; else $existe = "non";
 echo "Existence de l'utilisateur 'delasalle.sio.couasnon.c@gmail.com' : <b>" . $existe . "</b></br>";
-*/
+
 
 // test de la méthode autoriseAConsulter ----------------------------------------------------------
 // modifié par Jim le 13/8/2018
@@ -49,7 +49,7 @@ echo "<p>L'utilisateur 2 autorise l'utilisateur 4 : <b>" . $autorise . "</b><br>
 if ($dao->autoriseAConsulter(4, 2)) $autorise = "oui"; else $autorise = "non";
 echo "<p>L'utilisateur 4 autorise l'utilisateur 2 : <b>" . $autorise . "</b><br>";
 
-/*
+
 // test de la méthode getLesPointsDeTrace ---------------------------------------------------------
 // modifié par Jim le 13/8/2018
 echo "<h3>Test de getLesPointsDeTrace : </h3>";
@@ -98,7 +98,7 @@ if ($ok) {
 else {
     echo "<p>Echec lors de l'enregistrement de la trace !</p>";
 }
-*/
+
 
 
 

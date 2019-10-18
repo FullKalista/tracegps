@@ -1,17 +1,27 @@
 <?php
 // Projet TraceGPS - services web
-// fichier : api/services/GetLesUtilisateursQuiMautorisent.php
-// Dernière mise à jour : 18/10/2019 par Corentin Couasnon
+// fichier : api/services/GetLesParcoursDunUtilisateur.php
+// Dernière mise à jour : 18/10/2019 par Corentin
 
-// Rôle : ce service permet à un utilisateur authentifié d'obtenir la liste de tous les utilisateurs (de niveau 1)
-// Le service web doit recevoir 3 paramètres :
-//     pseudo : le pseudo de l'utilisateur
-//     mdp : le mot de passe de l'utilisateur hashé en sha1
-//     lang : le langage du flux de données retourné ("xml" ou "json") ; "xml" par défaut si le paramètre est absent ou incorrect
-// Le service retourne un flux de données XML ou JSON contenant un compte-rendu d'exécution
+// Rôle : ce service web permet à un utilisateur d'obtenir la liste de ses parcours ou la liste des parcours d'un utilisateur qui l'autorise.// Le service web doit recevoir 3 paramètres :
+
+// Paramètres à fournir :
+// •	pseudo : le pseudo de l'utilisateur
+// •	mdp : le mot de passe de l'utilisateur hashé en sha1
+// •	pseudoConsulte : le pseudo de l'utilisateur dont on veut consulter la liste des parcours
+// •	lang : le langage utilisé pour le flux de données ("xml" ou "json")
+
+// Description du traitement :
+// •	Vérifier que les données transmises sont complètes
+// •	Vérifier l'authentification de l'utilisateur demandeur
+// •	Vérifier l'existence du pseudo de l'utilisateur consulté
+// •	Vérifier si l'utilisateur demandeur consulte ses propres traces, ou si il est autorisé à consulter les traces de l'utilisateur consulté
+// •	Fournir la liste des traces de l'utilisateur consulté
 
 // Les paramètres doivent être passés par la méthode GET :
-//     http://<hébergeur>/tracegps/api/GetLesUtilisateursQuiMautorisent?pseudo=callisto&mdp=13e3668bbee30b004380052b086457b014504b3e&lang=xml
+//     http://<hébergeur>/tracegps/api/GetLesParcoursDunUtilisateur?pseudo=europa
+//     &mdp=13e3668bbee30b004380052b086457b014504b3e&pseudoConsulte=callisto&lang=json
+
 
 // connexion du serveur web à la base MySQL
 $dao = new DAO();
@@ -27,53 +37,68 @@ if ($lang != "json") $lang = "xml";
 
 // initialisation du nombre de réponses
 $nbReponses = 0;
-$lesUtilisateurs = array();
+$lesTraces = array();
 
 // La méthode HTTP utilisée doit être GET
 if ($this->getMethodeRequete() != "GET")
 {	$msg = "Erreur : méthode HTTP incorrecte.";
-$code_reponse = 406;
+    $code_reponse = 406;
 }
 else {
     // Les paramètres doivent être présents
-    if ( $pseudo == "" || $mdpSha1 == "" )
+    if ( $pseudo == "" || $mdpSha1 == "" || $pseudoConsulte == "")
     {	$msg = "Erreur : données incomplètes.";
-    $code_reponse = 400;
+        $code_reponse = 400;
     }
     else
-    {	if ( $dao->getNiveauConnexion($pseudo, $mdpSha1) == 0 ) {
-        $msg = "Erreur : authentification incorrecte.";
-        $code_reponse = 401;
-    }
-    else
-    {	// récupération de la liste des utilisateurs qui m'autorisent à l'aide de la méthode getLesUtilisateursAutorisant de la classe DAO
-        $lesUtilisateurs = $dao->getLesUtilisateursAutorisant($dao->getUnUtilisateur($pseudo)->getId());
-        
-        // mémorisation du nombre d'utilisateurs
-        $nbReponses = sizeof($lesUtilisateurs);
-        
-        if ($nbReponses == 0) {
-            $msg = "Aucune autorisation accordée à " . $pseudo . ".";
-            $code_reponse = 200;
+    {	
+        if ( $dao->getNiveauConnexion($pseudo, $mdpSha1) == 0 ) {
+            $msg = "Erreur : authentification incorrecte.";
+            $code_reponse = 401;
         }
-        else {
-            $msg = $nbReponses . " autorisation(s) accordée(s) à " . $pseudo . ".";
-            $code_reponse = 200;
+        else
+        {	
+            if ( $dao->getUnUtilisateur($pseudoConsulte) == null ) {
+                $msg = "Erreur : pseudo consulté inexistant.";
+                $code_reponse = 401;
+            }
+            else {
+                if ( ! $dao->autoriseAConsulter($dao->getUnUtilisateur($pseudoConsulte)->getId(), $dao->getUnUtilisateur($pseudo)->getId()) && $pseudo != $pseudoConsulte) {
+                    $msg = "Erreur : vous n'êtes pas autorisé par cet utilisateur.";
+                    $code_reponse = 401;
+                }
+                else {
+                    // récupération de la liste des utilisateurs à l'aide de la méthode getLesUtilisateursQueJautorise de la classe DAO
+                    $lesTraces = $dao->getLesTraces($dao->getUnUtilisateur($pseudoConsulte)->getId());
+                    
+                    // mémorisation du nombre d'utilisateurs
+                    $nbReponses = sizeof($lesTraces);
+                    
+                    if ($nbReponses == 0) {
+                        $msg = "Aucune trace pour l'utilisateur ". $pseudoConsulte . ".";
+                        $code_reponse = 200;
+                    }
+                    else {
+                        $msg = $nbReponses . " trace(s) pour l'utilisateur ". $pseudoConsulte . ".";
+                        $code_reponse = 200;
+                    }
+                }
+            }
         }
-    }
     }
 }
+
 // ferme la connexion à MySQL :
 unset($dao);
 
 // création du flux en sortie
 if ($lang == "xml") {
     $content_type = "application/xml; charset=utf-8";      // indique le format XML pour la réponse
-    $donnees = creerFluxXML($msg, $lesUtilisateurs);
+    $donnees = creerFluxXML($msg, $lesTraces);
 }
 else {
     $content_type = "application/json; charset=utf-8";      // indique le format Json pour la réponse
-    $donnees = creerFluxJSON($msg, $lesUtilisateurs);
+    $donnees = creerFluxJSON($msg, $lesTraces);
 }
 
 // envoi de la réponse HTTP
@@ -85,36 +110,31 @@ exit;
 // ================================================================================================
 
 // création du flux XML en sortie
-function creerFluxXML($msg, $lesUtilisateurs)
+function creerFluxXML($msg, $lesTraces)
 {
     /* Exemple de code XML
     <?xml version="1.0" encoding="UTF-8"?>
-    <!--Service web GetLesUtilisateursQuiMautorisent - BTS SIO - Lycée De La Salle - Rennes-->
+    <!--Service web GetLesParcoursDunUtilisateur - BTS SIO - Lycée De La Salle - Rennes-->
     <data>
-      <reponse>2 autorisation(s) accordée(s) à juno.</reponse>
+      <reponse>2 trace(s) pour l'utilisateur callisto</reponse>
       <donnees>
-        <lesUtilisateurs>
-            <utilisateur>
-              <id>5</id>
-              <pseudo>helios</pseudo>
-              <adrMail>delasalle.sio.eleves@gmail.com</adrMail>
-              <numTel>33.44.55.66.77</numTel>
-              <niveau>1</niveau>
-              <dateCreation>2018-11-03 21:46:44</dateCreation>
-              <nbTraces>2</nbTraces>
-              <dateDerniereTrace>2018-01-19 13:08:48</dateDerniereTrace>
-            </utilisateur>
-            <utilisateur>
-              <id>6</id>
-              <pseudo>indigo</pseudo>
-              <adrMail>delasalle.sio.eleves@gmail.com</adrMail>
-              <numTel>44.55.66.77.88</numTel>
-              <niveau>1</niveau>
-              <dateCreation>2018-11-03 21:46:44</dateCreation>
-              <nbTraces>2</nbTraces>
-              <dateDerniereTrace>2018-01-19 13:08:48</dateDerniereTrace>
-            </utilisateur>
-        </lesUtilisateurs>
+        <lesTraces>
+          <trace>
+            <id>2</id>
+            <dateHeureDebut>2018-01-19 13:08:48</dateHeureDebut>
+            <terminee>1</terminee>
+            <dateHeureFin>2018-01-19 13:11:48</dateHeureFin>
+            <distance>1.2</distance>
+            <idUtilisateur>2</idUtilisateur>
+          </trace>
+          <trace>
+            <id>1</id>
+            <dateHeureDebut>2018-01-19 13:08:48</dateHeureDebut>
+            <terminee>0</terminee>
+            <distance>0.5</distance>
+            <idUtilisateur>2</idUtilisateur>
+          </trace>
+        </lesTraces>
       </donnees>
     </data>
     */
@@ -127,7 +147,7 @@ function creerFluxXML($msg, $lesUtilisateurs)
     $doc->encoding = 'UTF-8';
     
     // crée un commentaire et l'encode en UTF-8
-    $elt_commentaire = $doc->createComment('Service web GetTousLesUtilisateurs - BTS SIO - Lycée De La Salle - Rennes');
+    $elt_commentaire = $doc->createComment('Service web GetLesParcoursDunUtilisateur - BTS SIO - Lycée De La Salle - Rennes');
     // place ce commentaire à la racine du document XML
     $doc->appendChild($elt_commentaire);
     
@@ -140,48 +160,42 @@ function creerFluxXML($msg, $lesUtilisateurs)
     $elt_data->appendChild($elt_reponse);
     
     // traitement des utilisateurs
-    if (sizeof($lesUtilisateurs) > 0) {
+    if (sizeof($lesTraces) > 0) {
         // place l'élément 'donnees' dans l'élément 'data'
         $elt_donnees = $doc->createElement('donnees');
         $elt_data->appendChild($elt_donnees);
         
-        // place l'élément 'lesUtilisateurs' dans l'élément 'donnees'
-        $elt_lesUtilisateurs = $doc->createElement('lesUtilisateurs');
-        $elt_donnees->appendChild($elt_lesUtilisateurs);
+        // place l'élément 'lesTraces' dans l'élément 'donnees'
+        $elt_lesTraces = $doc->createElement('lesTraces');
+        $elt_donnees->appendChild($elt_lesTraces);
         
-        foreach ($lesUtilisateurs as $unUtilisateur)
+        foreach ($lesTraces as $uneTrace)
         {
-            // crée un élément vide 'utilisateur'
-            $elt_utilisateur = $doc->createElement('utilisateur');
-            // place l'élément 'utilisateur' dans l'élément 'lesUtilisateurs'
-            $elt_lesUtilisateurs->appendChild($elt_utilisateur);
+            // crée un élément vide 'trace'
+            $elt_trace = $doc->createElement('trace');
+            // place l'élément 'trace' dans l'élément 'lesTraces'
+            $elt_lesTraces->appendChild($elt_trace);
             
-            // crée les éléments enfants de l'élément 'utilisateur'
-            $elt_id         = $doc->createElement('id', $unUtilisateur->getId());
-            $elt_utilisateur->appendChild($elt_id);
+            // crée les éléments enfants de l'élément 'trace'
+            $elt_id         = $doc->createElement('id', $uneTrace->getId());
+            $elt_trace->appendChild($elt_id);
             
-            $elt_pseudo     = $doc->createElement('pseudo', $unUtilisateur->getPseudo());
-            $elt_utilisateur->appendChild($elt_pseudo);
+            $elt_dateHeureDebut    = $doc->createElement('dateHeureDebut', $uneTrace->getDateHeureDebut());
+            $elt_trace->appendChild($elt_dateHeureDebut);
             
-            $elt_adrMail    = $doc->createElement('adrMail', $unUtilisateur->getAdrMail());
-            $elt_utilisateur->appendChild($elt_adrMail);
+            $elt_terminee    = $doc->createElement('terminee', $uneTrace->getTerminee());
+            $elt_trace->appendChild($elt_terminee);
             
-            $elt_numTel     = $doc->createElement('numTel', $unUtilisateur->getNumTel());
-            $elt_utilisateur->appendChild($elt_numTel);
-            
-            $elt_niveau     = $doc->createElement('niveau', $unUtilisateur->getNiveau());
-            $elt_utilisateur->appendChild($elt_niveau);
-            
-            $elt_dateCreation = $doc->createElement('dateCreation', $unUtilisateur->getDateCreation());
-            $elt_utilisateur->appendChild($elt_dateCreation);
-            
-            $elt_nbTraces   = $doc->createElement('nbTraces', $unUtilisateur->getNbTraces());
-            $elt_utilisateur->appendChild($elt_nbTraces);
-            
-            if ($unUtilisateur->getNbTraces() > 0)
-            {   $elt_dateDerniereTrace = $doc->createElement('dateDerniereTrace', $unUtilisateur->getDateDerniereTrace());
-            $elt_utilisateur->appendChild($elt_dateDerniereTrace);
+            if ($uneTrace->getTerminee() == 1) {
+                $elt_dateHeureFin     = $doc->createElement('dateHeureFin', $uneTrace->getDateHeureFin());
+                $elt_trace->appendChild($elt_dateHeureFin);
             }
+            
+            $elt_distance     = $doc->createElement('distance', round($uneTrace->getDistanceTotale(), 3));
+            $elt_trace->appendChild($elt_distance);
+            
+            $elt_idUtilisateur = $doc->createElement('idUtilisateur', $uneTrace->getIdUtilisateur());
+            $elt_trace->appendChild($elt_idUtilisateur);
         }
     }
     // Mise en forme finale
@@ -194,33 +208,28 @@ function creerFluxXML($msg, $lesUtilisateurs)
 // ================================================================================================
 
 // création du flux JSON en sortie
-function creerFluxJSON($msg, $lesUtilisateurs)
+function creerFluxJSON($msg, $lesTraces)
 {
     /* Exemple de code JSON
     {
         "data": {
-            "reponse": "2 autorisation(s) accord\u00e9e(s) \u00e0 juno.",
+            "reponse": "2 trace(s) pour l'utilisateur callisto",
             "donnees": {
-                "lesUtilisateurs": [
+                "lesTraces": [
                     {
-                        "id": "5",
-                        "pseudo": "helios",
-                        "adrMail": "delasalle.sio.eleves@gmail.com",
-                        "numTel": "33.44.55.66.77",
-                        "niveau": "1",
-                        "dateCreation": "2018-11-03 21:46:44",
-                        "nbTraces": "2",
-                        "dateDerniereTrace": "2018-01-19 13:08:48"
+                        "id": "2",
+                        "dateHeureDebut": "2018-01-19 13:08:48",
+                        "terminee": "1",
+                        "dateHeureFin": "2018-01-19 13:11:48",
+                        "distance": "1.2",
+                        "idUtilisateur": "2"
                     },
                     {
-                        "id": "6",
-                        "pseudo": "indigo",
-                        "adrMail": "delasalle.sio.eleves@gmail.com",
-                        "numTel": "44.55.66.77.88",
-                        "niveau": "1",
-                        "dateCreation": "2018-11-03 21:46:44",
-                        "nbTraces": "2",
-                        "dateDerniereTrace": "2018-01-19 13:08:48"
+                        "id": "1",
+                        "dateHeureDebut": "2018-01-19 13:08:48",
+                        "terminee": "0",
+                        "distance": "0.5",
+                        "idUtilisateur": "2"
                     }
                 ]
             }
@@ -229,33 +238,31 @@ function creerFluxJSON($msg, $lesUtilisateurs)
     */
     
     
-    if (sizeof($lesUtilisateurs) == 0) {
+    if (sizeof($lesTraces) == 0) {
         // construction de l'élément "data"
         $elt_data = ["reponse" => $msg];
     }
     else {
-        // construction d'un tableau contenant les utilisateurs
+        // construction d'un tableau contenant les traces
         $lesObjetsDuTableau = array();
-        foreach ($lesUtilisateurs as $unUtilisateur)
+        foreach ($lesTraces as $uneTrace)
         {	// crée une ligne dans le tableau
-            $unObjetUtilisateur = array();
-            $unObjetUtilisateur["id"] = $unUtilisateur->getId();
-            $unObjetUtilisateur["pseudo"] = $unUtilisateur->getPseudo();
-            $unObjetUtilisateur["adrMail"] = $unUtilisateur->getAdrMail();
-            $unObjetUtilisateur["numTel"] = $unUtilisateur->getNumTel();
-            $unObjetUtilisateur["niveau"] = $unUtilisateur->getNiveau();
-            $unObjetUtilisateur["dateCreation"] = $unUtilisateur->getDateCreation();
-            $unObjetUtilisateur["nbTraces"] = $unUtilisateur->getNbTraces();
-            if ($unUtilisateur->getNbTraces() > 0)
-            {   $unObjetUtilisateur["dateDerniereTrace"] = $unUtilisateur->getDateDerniereTrace();
+            $unObjetTrace = array();
+            $unObjetTrace["id"] = $uneTrace->getId();
+            $unObjetTrace["dateHeureDebut"] = $uneTrace->getDateHeureDebut();
+            $unObjetTrace["terminee"] = $uneTrace->getTerminee();
+            if ($uneTrace->getTerminee() == 1) {
+                $unObjetTrace["dateHeureFin"] = $uneTrace->getDateHeureFin();
             }
-            $lesObjetsDuTableau[] = $unObjetUtilisateur;
+            $unObjetTrace["distance"] = number_format($uneTrace->getDistanceTotale(), 1);
+            $unObjetTrace["idUtilisateur"] = $uneTrace->getIdUtilisateur();
+            $lesObjetsDuTableau[] = $unObjetTrace;
         }
         // construction de l'élément "lesUtilisateurs"
-        $elt_utilisateur = ["lesUtilisateurs" => $lesObjetsDuTableau];
+        $elt_traces = ["lesTraces" => $lesObjetsDuTableau];
         
         // construction de l'élément "data"
-        $elt_data = ["reponse" => $msg, "donnees" => $elt_utilisateur];
+        $elt_data = ["reponse" => $msg, "donnees" => $elt_traces];
     }
     
     // construction de la racine
