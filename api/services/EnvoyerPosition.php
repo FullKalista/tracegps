@@ -45,6 +45,7 @@ $altitude = ( empty($this->request['altitude'])) ? "" : $this->request['altitude
 $rythmeCardio = ( empty($this->request['rythmeCardio'])) ? "" : $this->request['rythmeCardio'];
 $lang = ( empty($this->request['lang'])) ? "" : $this->request['lang'];
 $idPoint = null;
+$laTrace = $dao->getUneTrace($idTrace);
 
 // "xml" par défaut si le paramètre lang est absent ou incorrect
 if ($lang != "json") $lang = "xml";
@@ -66,29 +67,31 @@ else {
             $code_reponse = 401;
         }
         else {
-            if ( $dao->getUneTrace($idTrace) == null ) {
+            if ( $laTrace == null ) {
                 $msg = "Erreur : le numéro de trace n'existe pas.";
                 $code_reponse = 401;
             }
             else {
-                if ( $dao->getUneTrace($idTrace)->getIdUtilisateur() != $dao->getUnUtilisateur($pseudo)->getId()) {
+                if ( $laTrace->getIdUtilisateur() != $dao->getUnUtilisateur($pseudo)->getId()) {
                     $msg = "Erreur : le numéro de trace ne correspond pas à cet utilisateur.";
                     $code_reponse = 401;
                 }
                 else {
-                    if ( $dao->getUneTrace($idTrace)->getTerminee()) {
+                    if ( $laTrace->getTerminee()) {
                         $msg = "Erreur : la trace est déjà terminée.";
                         $code_reponse = 401;
                     }
                     else {
-                        $idPoint = $dao->getUneTrace($idTrace)->getNombrePoints() + 1;
+                        $idPoint = $laTrace->getNombrePoints() + 1;
                         $unPoint = new PointDeTrace($idTrace, $idPoint, $latitude, $longitude, $altitude, $dateHeure, $rythmeCardio, 0, 0, 0);
-                        $dao->getUneTrace($idTrace)->ajouterPoint($unPoint);
-                        $ok = $dao->creerUnPointDeTrace($unPoint);
+                        $laTrace->ajouterPoint($unPoint);
+                        $dernierPoint = $laTrace->getLesPointsDeTrace()[$laTrace->getNombrePoints() - 1];
+                        $ok = $dao->creerUnPointDeTrace($dernierPoint);
                         
                         if ( ! $ok) {
                             $msg = "Erreur : problème lors de l'enregistrement du point.";
                             $code_reponse = 500;
+                            $idPoint = null;
                         }
                         else {
                             $msg = "Point créé.";
@@ -156,7 +159,7 @@ function creerFluxXML($msg, $idPoint)
     
     // place l'élément 'donnees' après l'élément 'reponse'
     $elt_donnees = $doc->createElement('donnees');
-    $elt_data->appendChild($elt_reponse);
+    $elt_data->appendChild($elt_donnees);
     
     if ($idPoint != null) {
         // place l'élément 'id' juste après l'élément 'donnees'
@@ -191,10 +194,10 @@ function creerFluxJSON($msg, $idPoint)
     $elt_data = ["reponse" => $msg];
     
     if ($idPoint != null) {
-        $elt_data = ["donnees" => $idPoint];
+        $elt_data += ["donnees" => $idPoint];
     }
     else {
-        $elt_data = ["donnees" => []];
+        $elt_data += ["donnees" => []];
     }
     
     // construction de la racine
