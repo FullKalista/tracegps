@@ -28,7 +28,7 @@
 // getLesPointsDeTrace($idTrace) : fournit la collection des points de la trace $idTrace
 // getUneTrace($idTrace) : fournit un objet Trace à partir de identifiant $idTrace
 // getToutesLesTraces() : fournit la collection de toutes les traces
-// getMesTraces($idUtilisateur) : fournit la collection des traces de l'utilisateur $idUtilisateur
+// getLesTraces($idUtilisateur) : fournit la collection des traces de l'utilisateur $idUtilisateur
 // getLesTracesAutorisees($idUtilisateur) : fournit la collection des traces que l'utilisateur $idUtilisateur a le droit de consulter
 // creerUneTrace(Trace $uneTrace) : enregistre la trace $uneTrace dans la bdd
 // terminerUneTrace($idTrace) : enregistre la fin de la trace d'identifiant $idTrace dans la bdd ainsi que la date de fin
@@ -360,11 +360,14 @@ class DAO
         $txt_req .= " where niveau = 1";
         $txt_req .= " AND id IN (SELECT idAutorise";
         $txt_req .= " from tracegps_autorisations";
-        $txt_req .= " where idAutorisant = 2)";
+        $txt_req .= " where idAutorisant = :idUtilisateur)";
         $txt_req .= " order by pseudo";
         
         
         $req = $this->cnx->prepare($txt_req);
+        
+        $req->bindValue("idUtilisateur", utf8_decode($idUtilisateur), PDO::PARAM_INT);
+        
         // extraction des données
         $req->execute();
         $uneLigne = $req->fetch(PDO::FETCH_OBJ);
