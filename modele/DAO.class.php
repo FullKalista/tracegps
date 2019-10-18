@@ -587,11 +587,11 @@ class DAO
     //autorise l'utilisateur $idAutorise à consulter ses traces
     //On fourni les ID des utilisateurs autorisant et autorisés
     //On renvoie un boléen : True si M.X autorise M.Y à consulter ses traces, sinon false.
-    public function autoriseAConsulter($idAutorisant, $idAutorisé){
+    public function autoriseAConsulter($idAutorisant, $idAutorise){
         $txt_req = "Select count(*) from tracegps_autorisations where idAutorise = :idAutorise AND idAutorisant = :idAutorisant";
         $req = $this->cnx->prepare($txt_req);
         // liaison de la requête et de ses paramètres
-        $req->bindValue("idAutorise", $idAutorisé, PDO::PARAM_INT);
+        $req->bindValue("idAutorise", $idAutorise, PDO::PARAM_INT);
         $req->bindValue("idAutorisant", $idAutorisant, PDO::PARAM_INT);
         // exécution de la requête
         $req->execute();
