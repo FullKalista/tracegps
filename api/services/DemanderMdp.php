@@ -31,7 +31,7 @@ if ( $pseudo == "") {
         
         
         if ($dao->existePseudoUtilisateur($pseudo) == false ) {
-                  $msg = "Erreur : authentification incorrecte.";
+            $msg = "Erreur : pseudo utilisateur inexistant.";
                   $code_reponse = 401;
               }
               else {

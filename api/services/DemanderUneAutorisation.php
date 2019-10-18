@@ -1,15 +1,20 @@
 <?php
 // Projet TraceGPS - services web
 // fichier :  api/services/DemanderMDP.php
-// Dernière mise à jour : 3/7/2019 par Jim
+// Dernière mise à jour : 18/10/2019 par Yvan
 
 // Rôle : ce service permet à un utilisateur de demander un mail pour retrouver son mdp perdu
-// Le service web doit recevoir 1 paramètre :
+// Le service web doit recevoir 6 paramètre :
 //     pseudo : le pseudo de l'utilisateur
+//     mdp : le mot de passe de l'utilisateur
+//     pseudoDestinataire : le pseudo du destinataire
+//     texteMessage : le texte d'un message accompagnant la demande
+//     nomPrenom : le nom et le prénom du demandeur
+//     lang : le langage utilisé pour le flux de données ("xml" ou "json")
 // Le service retourne un flux de données XML ou JSON contenant un compte-rendu d'exécution
 
-// Les paramètres doivent être passés par la méthode GET :
-//     http://<hébergeur>/tracegps/api/ChangerDeMdppseudo=europa&mdp=13e3668bbee30b004380052b086457b014504b3e&nouveauMdp=123&confirmationMdp=123&lang=xml
+
+// http://<hébergeur>/tracegps/api/DemanderMdp
 // connexion du serveur web à la base MySQL
 $dao = new DAO();
 
@@ -19,46 +24,52 @@ $dao = new DAO();
 
 //Récupération du pseudo de l'utilisateur
 $pseudo = ( empty($this->request['pseudo'])) ? "" : $this->request['pseudo'];
+$mdp = ( empty($this->request['mdp'])) ? "" : $this->request['mdp'];
+$pseudoDestinataire = ( empty($this->request['pseudoDestinataire'])) ? "" : $this->request['pseudoDestinataire'];
+$texteMessage = ( empty($this->request['texteMessage'])) ? "" : $this->request['texteMessage'];
+$nomPrenom = ( empty($this->request['nomPrenom'])) ? "" : $this->request['nomPrenom'];
 $lang = ( empty($this->request['lang'])) ? "" : $this->request['lang'];
 
 
 
-if ( $pseudo == "") {
-        $msg = "Erreur : données incomplètes.";
-        $code_reponse = 400;
+if ( $pseudo == ""|| $mdp == ""|| $pseudoDestinataire == ""|| $texteMessage == ""|| $nomPrenom == "") {
+    $msg = "Erreur : données incomplètes.";
+    $code_reponse = 400;
+}
+else {
+    
+    
+    if ($niveauConnexion = $dao->getNiveauConnexion($pseudo, $mdp) == 0 ) {
+        $msg = "Erreur : authentification incorrecte.";
+        $code_reponse = 401;
     }
     else {
         
-        
-        if ($dao->existePseudoUtilisateur($pseudo) == false ) {
-                  $msg = "Erreur : authentification incorrecte.";
-                  $code_reponse = 401;
-              }
-              else {
-                  // enregistre le nouveau mot de passe de l'utilisateur dans la bdd après l'avoir codé en sha1
-                  $nouveauMdp = Outils::creerMdp();
-                  $ok = $dao->modifierMdpUtilisateur ($pseudo, $nouveauMdp);
-                
-                  if ( ! $ok ) {
-                      $msg = "Erreur : problème lors de l'enregistrement du mot de passe.";
-                      $code_reponse = 500;
-                  }
-                  else {
-                      // envoie un courriel  à l'utilisateur avec son nouveau mot de passe
-                      $ok = $dao->envoyerMdp ($pseudo, $nouveauMdp);
-                      if ( ! $ok ) {
-                          $msg = "Enregistrement effectué ; l'envoi du courriel  de confirmation a rencontré un problème.";
-                          $code_reponse = 500;
-                      }
-                      else {
-                          $msg = "Enregistrement effectué ; vous allez recevoir un courriel de confirmation.";
-                          $code_reponse = 200;
-                        }
-                    }
-                }
-            
+        if ( $dao->existePseudoUtilisateur($pseudoDestinataire) == false ) {
+            $msg = "Erreur : pseudo utilisateur inexistant.";
+            $code_reponse = 500;
         }
+        else {
+            $user1 = $dao->getUnUtilisateur($pseudo);
+            $adresseDemandeur = $user1->getAdrMail();
+            $user2 = $dao->getUnUtilisateur($pseudoDestinataire);
+            $adresseAutreMembre = $user2->getAdrMail();
+            $sujet = "Demande d'autorisation de la part d'un utilisateur du système TraceGPS";
+            // envoie un courriel  à l'utilisateur avec son nouveau mot de passe
+            $ok = Outils::envoyerMail($adresseAutreMembre, $sujet, $texteMessage, $adresseDemandeur);
+            if ( ! $ok ) {
+                $msg = "Enregistrement effectué ; l'envoi du courriel  de confirmation a rencontré un problème.";
+                $code_reponse = 500;
+            }
+            else {
+                $msg = "Enregistrement effectué ; vous allez recevoir un courriel de confirmation.";
+                $code_reponse = 200;
+            }
+        }
+    }
     
+}
+
 
 // ferme la connexion à MySQL :
 unset($dao);
@@ -100,7 +111,7 @@ function creerFluxXML($msg)
     $doc->encoding = 'UTF-8';
     
     // crée un commentaire et l'encode en UTF-8
-    $elt_commentaire = $doc->createComment('Service web DemanderMdp - BTS SIO - Lycée De La Salle - Rennes');
+    $elt_commentaire = $doc->createComment('Service web DemanderUneAutorisation - BTS SIO - Lycée De La Salle - Rennes');
     // place ce commentaire à la racine du document XML
     $doc->appendChild($elt_commentaire);
     
