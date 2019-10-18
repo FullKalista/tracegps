@@ -49,7 +49,7 @@ else
         }
         else 
         {
-            if ( $dao->autoriseAConsulter($pseudo, $pseudoARetirer) == false) 
+            if ( $dao->autoriseAConsulter($idAutorisant, $idAutorise) == false) 
             {
                 $msg = "Erreur : l'autorisation n'était pas accordée";
                 $code_reponse = 400;
