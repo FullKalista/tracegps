@@ -1,7 +1,7 @@
 <?php
 // Projet TraceGPS - services web
 // fichier :  api/services/DemanderMDP.php
-// Dernière mise à jour : 18/10/2019 par Yvan
+// Dernière mise à jour : 18/10/2019 par Guillaume
 
 // Rôle : ce service permet à un utilisateur de demander un mail pour retrouver son mdp perdu
 // Le service web doit recevoir 6 paramètre :
@@ -18,7 +18,7 @@
 // connexion du serveur web à la base MySQL
 $dao = new DAO();
 
-//Classe outil
+
 
 
 
@@ -29,50 +29,68 @@ $pseudoARetirer = ( empty($this->request['pseudoARetirer'])) ? "" : $this->reque
 $texteMessage = ( empty($this->request['texteMessage'])) ? "" : $this->request['texteMessage'];
 $lang = ( empty($this->request['lang'])) ? "" : $this->request['lang'];
 
+// "xml" par défaut si le paramètre lang est absent ou incorrect
+if ($lang != "json") $lang = "xml";
 
-
-if ( $pseudo == ""|| $mdp == ""|| $pseudoARetirer == ""|| $texteMessage == "") {
+if ( $pseudo == "" || $mdp == "" || $pseudoARetirer == "") {
     $msg = "Erreur : données incomplètes.";
     $code_reponse = 400;
 }
-else {
-    
-    
-    if ($niveauConnexion = $dao->getNiveauConnexion($pseudo, $mdp) == 0 ) {
+else 
+{
+    $niveauConnexion = $dao->getNiveauConnexion($pseudo, $mdp);
+    if ($niveauConnexion == 0 ) 
+    {
         $msg = "Erreur : authentification incorrecte.";
         $code_reponse = 401;
     }
-    else {
-        
-        if ( $dao->existePseudoUtilisateur($pseudoARetirer) == false ) {
+    else 
+    {
+        if ( $dao->existePseudoUtilisateur($pseudoARetirer) == false ) 
+        {
             $msg = "Erreur : pseudo utilisateur inexistant.";
-            $code_reponse = 500;
+            $code_reponse = 400;
         }
-        else {
-            if ( $dao->autoriseAConsulter($idAutorisant, $idAutorisé) == false) {
+        else 
+        {
+            if ( $dao->autoriseAConsulter($pseudo, $pseudoARetirer) == false) 
+            {
                 $msg = "Erreur : l'autorisation n'était pas accordée";
-                $code_reponse = 500;
+                $code_reponse = 400;
             }
-            else {
-                $user1 = $dao->getUnUtilisateur($pseudo);
-                $adresseDemandeur = $user1->getAdrMail();
-                $user2 = $dao->getUnUtilisateur($pseudoARetirer);
-                $adresseAutreMembre = $user2->getAdrMail();
-                $sujet = "Demande de retrait d'une autorisation de la part d'un utilisateur du système TraceGPS";
-                // envoie un courriel  à l'utilisateur à qui on a supprimé l'autorisation
-                $ok = Outils::envoyerMail($adresseAutreMembre, $sujet, $texteMessage, $adresseDemandeur);
-            }
-            if ( ! $ok ) {
-                $msg = "Suppression de l'autorisation effectuée; l'envoi du courriel  de confirmation a rencontré un problème.";
-                $code_reponse = 500;
-            }
-            else {
-                $msg = "Suppression de l'autorisation effectuée; vous allez recevoir un courriel de confirmation.";
-                $code_reponse = 200;
+            else 
+            {
+                if ($dao->supprimerUneAutorisation($pseudo, $pseudoARetirer) == false)
+                {
+                    $msg = "Erreur : problème lors de la suppression de l'autorisation";
+                    $code_reponse = 500;
+                }
+                else 
+                {
+                    if ($texteMessage != "")
+                    {
+                        $user1 = $dao->getUnUtilisateur($pseudo);
+                        $adresseDemandeur = $user1->getAdrMail();
+                        $user2 = $dao->getUnUtilisateur($pseudoARetirer);
+                        $adresseAutreMembre = $user2->getAdrMail();
+                        $sujet = "Suppression d'autorisation de la part d'un utilisateur du système TraceGPS";
+                        // envoie un courriel  à l'utilisateur à qui on a supprimé l'autorisation
+                        $ok = Outils::envoyerMail($adresseAutreMembre, $sujet, $texteMessage, $adresseDemandeur);
+                        if ( ! $ok ) 
+                        {
+                            $msg = "Autorisation supprimée ; l'envoi du courriel  de confirmation a rencontré un problème.";
+                            $code_reponse = 500;
+                        }
+                        else 
+                        {
+                            $msg = "Autorisation supprimée ; vous allez recevoir un courriel de confirmation.";
+                            $code_reponse = 200;
+                        }
+                    }
+                }
             }
         }
-    }
-    
+    }  
 }
 
 
