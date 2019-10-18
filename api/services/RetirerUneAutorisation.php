@@ -18,10 +18,6 @@
 // connexion du serveur web à la base MySQL
 $dao = new DAO();
 
-
-
-
-
 //Récupération du pseudo de l'utilisateur
 $pseudo = ( empty($this->request['pseudo'])) ? "" : $this->request['pseudo'];
 $mdp = ( empty($this->request['mdp'])) ? "" : $this->request['mdp'];
