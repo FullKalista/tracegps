@@ -39,7 +39,7 @@ if ( $pseudo == ""|| $mdp == ""|| $pseudoDestinataire == ""|| $texteMessage == "
 else {
     
     
-    if ($niveauConnexion = $dao->getNiveauConnexion($pseudo, $mdp) == 0 ) {
+    if ($dao->getNiveauConnexion($pseudo, $mdp) == 0 ) {
         $msg = "Erreur : authentification incorrecte.";
         $code_reponse = 401;
     }
