@@ -49,20 +49,23 @@ else
         }
         else 
         {
-            if ( $dao->autoriseAConsulter($idAutorisant, $idAutorise) == false) 
+            if ( $dao->autoriseAConsulter($dao->getUnUtilisateur($pseudo)->getId(), $dao->getUnUtilisateur($pseudoARetirer)->getId()) == false) 
             {
                 $msg = "Erreur : l'autorisation n'était pas accordée";
                 $code_reponse = 400;
             }
             else 
             {
-                if ($dao->supprimerUneAutorisation($pseudo, $pseudoARetirer) == false)
+                if ($dao->supprimerUneAutorisation($dao->getUnUtilisateur($pseudo)->getId(), $dao->getUnUtilisateur($pseudoARetirer)->getId()) == false)
                 {
                     $msg = "Erreur : problème lors de la suppression de l'autorisation";
                     $code_reponse = 500;
                 }
                 else 
                 {
+                    $msg = "Autorisation supprimée";
+                    $code_reponse = 200;
+                    
                     if ($texteMessage != "")
                     {
                         $user1 = $dao->getUnUtilisateur($pseudo);
