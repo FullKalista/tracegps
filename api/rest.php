@@ -19,10 +19,11 @@ class Rest {
 	//    $content_type : le format de la réponse ("application/json; charset=utf-8" ou "application/xml; charset=utf-8")
 	//    $donnees : les données encodées (formatées en Json ou en XML)
 	protected function envoyerReponse($code_reponse, $content_type, $donnees) {
-        $this->codeReponse = $code_reponse;       // mémorise le code de la réponse HTTP
+        //$this->codeReponse = $code_reponse;       // mémorise le code de la réponse HTTP
+        $this->codeReponse = 200;       // mémorise le code de la réponse HTTP
         $this->contentType = $content_type;       // mémorise le le format de la réponse HTTP
         $this->preparerEntetes();                 // prépare les entêtes HTTP de la réponse HTTP
-        echo $donnees;                            // envoie les données dans le corps de la réponse HTTP
+        echo trim($donnees);                            // envoie les données dans le corps de la réponse HTTP
         exit;                                     // fin de l'exécution
 	}		
 	
