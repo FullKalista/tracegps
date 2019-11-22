@@ -15,7 +15,7 @@
 
 // connexion du serveur web à la base MySQL
 $dao = new DAO();
-	
+
 // Récupération des données transmises
 $pseudo = ( empty($this->request['pseudo'])) ? "" : $this->request['pseudo'];
 $mdpSha1 = ( empty($this->request['mdp'])) ? "" : $this->request['mdp'];

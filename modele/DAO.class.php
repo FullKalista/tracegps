@@ -1,4 +1,4 @@
-﻿<?php
+<?php
 // Projet TraceGPS
 // fichier : modele/DAO.class.php   (DAO : Data Access Object)
 // Rôle : fournit des méthodes d'accès à la bdd tracegps (projet TraceGPS) au moyen de l'objet PDO
@@ -35,14 +35,14 @@
 // supprimerUneTrace($idTrace) : supprime la trace d'identifiant $idTrace dans la bdd, ainsi que tous ses points
 // creerUnPointDeTrace(PointDeTrace $unPointDeTrace) : enregistre le point $unPointDeTrace dans la bdd
 
-
+ 
 // certaines méthodes nécessitent les classes suivantes :
 include_once ('Utilisateur.class.php');
 include_once ('Trace.class.php');
 include_once ('PointDeTrace.class.php');
 include_once ('Point.class.php');
 include_once ('Outils.class.php');
-
+ 
 // inclusion des paramètres de l'application
 include_once ('parametres.php');
 

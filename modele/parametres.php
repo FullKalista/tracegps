@@ -13,7 +13,7 @@ $PARAM_USER = "tracegps";		// nom de l'utilisateur
 $PARAM_PWD = "spgecart";		// son mot de passe
 
 // Autres paramètres -----------------------------------------------------------------------------------------
-
+ 
 // adresse de l'émetteur lors d'un envoi de courriel
 $ADR_MAIL_EMETTEUR = "delasalle.sio.crib@gmail.com";
 

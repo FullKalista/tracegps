@@ -25,7 +25,7 @@ class Utilisateur
     // ------------------------------------------------------------------------------------------------------
     // ----------------------------------------- Constructeur -----------------------------------------------
     // ------------------------------------------------------------------------------------------------------
-    
+     
     public function __construct($unId, $unPseudo, $unMdpSha1, $uneAdrMail, $unNumTel, $unNiveau,
         $uneDateCreation, $unNbTraces, $uneDateDerniereTrace) {
             $this->id = $unId;

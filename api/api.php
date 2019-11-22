@@ -2,7 +2,7 @@
 // Projet TraceGPS - services web
 // Fichier : api/api.php
 // La classe Api hérite de la classe Rest (fichier api/rest.php)
-// Dernière mise à jour : 3/7/2018 par Jim
+// Dernière mise à jour : 9/11/2019 par Jim
 
 include_once ("rest.php");
 include_once ('../modele/DAO.class.php');
@@ -46,7 +46,8 @@ class Api extends Rest
             // l'action demandée n'existe pas, la réponse est 404 ("Page not found") et aucune donnée n'est envoyée
             default : {
                 $code_reponse = 404;            
-                $donnees = '';
+                // $donnees = '';
+                $donnees = json_encode(["action" => $action], JSON_PRETTY_PRINT);
                 $content_type = "application/json; charset=utf-8";      // indique le format Json pour la réponse
                 $this->envoyerReponse($code_reponse, $content_type, $donnees);    // envoi de la réponse HTTP
                 break;

@@ -22,7 +22,7 @@ class Trace
     // ------------------------------------------------------------------------------------------------------
     // ----------------------------------------- Constructeur -----------------------------------------------
     // ------------------------------------------------------------------------------------------------------
-    
+     
     public function __construct($unId, $uneDateHeureDebut, $uneDateHeureFin, $terminee, $unIdUtilisateur) {
         $this->id = $unId;
         $this->dateHeureDebut = $uneDateHeureDebut;
@@ -246,7 +246,7 @@ class Trace
             
             $tpsTotal = $this->getDureeEnSecondes();
             $distTotal = $this->getDistanceTotale();
-            
+
             return ($distTotal / $tpsTotal) * 3600;
         }
         

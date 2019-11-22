@@ -1,4 +1,4 @@
-﻿<?php
+<?php
 // Projet TraceGPS
 // fichier : modele/Outils.class.php
 // Rôle : boite à outils de fonctions courantes proposées sous forme de méthodes statiques
@@ -31,11 +31,11 @@
 
 // ces méthodes statiques sont appelées avec la notation suivante :
 //     Outils::methode(parametres);
-
+ 
 // début de la classe Outils
 class Outils
 {
-
+ 
     // La fonction convertirEnDateFR($laDate) reçoit une date US (aaaa-mm-jj) et fournit sa conversion au format Français (jj/mm/aaaa)
 	// par exemple, le paramètre '2007-05-16' donnera '16/05/2007'
     // Dernière mise à jour : 13/7/2018 par JM CARTRON
