@@ -47,7 +47,7 @@ $code_reponse = 406;
 else {
     // Les paramètres doivent être présents
     if ($pseudo == '' || $mdp == '' || $idTrace == '') {
-        $msg = "Erreur : données incomplètes ou incorrectes.";
+        $msg = "Erreur : données incomplètes.";
         $code_reponse = 400;
     }
     else {
