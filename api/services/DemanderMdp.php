@@ -51,7 +51,7 @@ if ( $pseudo == "") {
                           $code_reponse = 500;
                       }
                       else {
-                          $msg = "Enregistrement effectué ; vous allez recevoir un courriel de confirmation.";
+                          $msg = "Vous allez recevoir un courriel de confirmation.";
                           $code_reponse = 200;
                         }
                     }
