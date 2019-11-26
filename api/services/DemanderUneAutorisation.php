@@ -30,7 +30,7 @@ $texteMessage = ( empty($this->request['texteMessage'])) ? "" : $this->request['
 $nomPrenom = ( empty($this->request['nomPrenom'])) ? "" : $this->request['nomPrenom'];
 $lang = ( empty($this->request['lang'])) ? "" : $this->request['lang'];
 
-
+if ($lang != "json") $lang = "xml";
 
 if ( $pseudo == ""|| $mdp == ""|| $pseudoDestinataire == ""|| $texteMessage == ""|| $nomPrenom == "") {
     $msg = "Erreur : données incomplètes.";
