@@ -20,8 +20,6 @@ $dao = new DAO();
 
 //Classe outil
 
-
-
 //Récupération du pseudo de l'utilisateur
 $pseudo = ( empty($this->request['pseudo'])) ? "" : $this->request['pseudo'];
 $mdp = ( empty($this->request['mdp'])) ? "" : $this->request['mdp'];
@@ -29,8 +27,6 @@ $pseudoDestinataire = ( empty($this->request['pseudoDestinataire'])) ? "" : $thi
 $texteMessage = ( empty($this->request['texteMessage'])) ? "" : $this->request['texteMessage'];
 $nomPrenom = ( empty($this->request['nomPrenom'])) ? "" : $this->request['nomPrenom'];
 $lang = ( empty($this->request['lang'])) ? "" : $this->request['lang'];
-
-
 
 if ( $pseudo == ""|| $mdp == ""|| $pseudoDestinataire == ""|| $texteMessage == ""|| $nomPrenom == "") {
     $msg = "Erreur : données incomplètes.";
