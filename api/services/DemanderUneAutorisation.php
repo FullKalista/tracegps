@@ -54,11 +54,11 @@ else {
             // envoie un courriel  à l'utilisateur avec son nouveau mot de passe
             $ok = Outils::envoyerMail($adresseAutreMembre, $sujet, $texteMessage, $adresseDemandeur);
             if ( ! $ok ) {
-                $msg = "Enregistrement effectué ; l'envoi du courriel  de confirmation a rencontré un problème.";
+                $msg = "Erreur : l'envoi du courriel de demande d'autorisation a rencontré un problème.";
                 $code_reponse = 500;
             }
             else {
-                $msg = "Enregistrement effectué ; vous allez recevoir un courriel de confirmation.";
+                $msg = $pseudoDestinataire."va recevoir un courriel avec votre demande.";
                 $code_reponse = 200;
             }
         }
