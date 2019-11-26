@@ -15,51 +15,44 @@ $dao = new DAO();
 
 //Classe outil
 
-
-
 //Récupération du pseudo de l'utilisateur
 $pseudo = ( empty($this->request['pseudo'])) ? "" : $this->request['pseudo'];
 $lang = ( empty($this->request['lang'])) ? "" : $this->request['lang'];
 
-
+// "xml" par défaut si le paramètre lang est absent ou incorrect
+if ($lang != "json") $lang = "xml";
 
 if ( $pseudo == "") {
         $msg = "Erreur : données incomplètes.";
         $code_reponse = 400;
+}
+else {
+    if ($dao->existePseudoUtilisateur($pseudo) == false ) {
+        $msg = "Erreur : pseudo inexistant.";
+        $code_reponse = 401;
     }
     else {
-        
-        
-        if ($dao->existePseudoUtilisateur($pseudo) == false ) {
-            $msg = "Erreur : pseudo utilisateur inexistant.";
-                  $code_reponse = 401;
-              }
-              else {
-                  // enregistre le nouveau mot de passe de l'utilisateur dans la bdd après l'avoir codé en sha1
-                  $nouveauMdp = Outils::creerMdp();
-                  $ok = $dao->modifierMdpUtilisateur ($pseudo, $nouveauMdp);
-                
-                  if ( ! $ok ) {
-                      $msg = "Erreur : problème lors de l'enregistrement du mot de passe.";
-                      $code_reponse = 500;
-                  }
-                  else {
-                      // envoie un courriel  à l'utilisateur avec son nouveau mot de passe
-                      $ok = $dao->envoyerMdp ($pseudo, $nouveauMdp);
-                      if ( ! $ok ) {
-                          $msg = "Enregistrement effectué ; l'envoi du courriel  de confirmation a rencontré un problème.";
-                          $code_reponse = 500;
-                      }
-                      else {
-                          $msg = "Enregistrement effectué ; vous allez recevoir un courriel de confirmation.";
-                          $code_reponse = 200;
-                        }
-                    }
-                }
-            
+        // enregistre le nouveau mot de passe de l'utilisateur dans la bdd après l'avoir codé en sha1
+        $nouveauMdp = Outils::creerMdp();
+        $ok = $dao->modifierMdpUtilisateur ($pseudo, $nouveauMdp);
+        if ( ! $ok ) {
+            $msg = "Erreur : problème lors de l'enregistrement du mot de passe.";
+            $code_reponse = 500;
         }
-    
-
+        else {
+            // envoie un courriel  à l'utilisateur avec son nouveau mot de passe
+            $ok = $dao->envoyerMdp ($pseudo, $nouveauMdp);
+            if ( ! $ok ) {
+                $msg = "Enregistrement effectué ; l'envoi du courriel  de confirmation a rencontré un problème.";
+                $code_reponse = 500;
+            }
+            else {
+                $msg = "Vous allez recevoir un courriel de confirmation avec votre nouveau mot de passe.";
+                $code_reponse = 200;
+            }
+        }
+    }
+}
 // ferme la connexion à MySQL :
 unset($dao);
 
