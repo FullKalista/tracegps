@@ -47,7 +47,7 @@ else {
                 $code_reponse = 500;
             }
             else {
-                $msg = "Vous allez recevoir un courriel de confirmation.";
+                $msg = "Vous allez recevoir un courriel de confirmation avec votre nouveau mot de passe.";
                 $code_reponse = 200;
             }
         }
