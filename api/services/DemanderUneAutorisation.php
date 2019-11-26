@@ -20,8 +20,6 @@ $dao = new DAO();
 
 //Classe outil
 
-
-
 //Récupération du pseudo de l'utilisateur
 $pseudo = ( empty($this->request['pseudo'])) ? "" : $this->request['pseudo'];
 $mdp = ( empty($this->request['mdp'])) ? "" : $this->request['mdp'];
@@ -37,9 +35,7 @@ if ( $pseudo == ""|| $mdp == ""|| $pseudoDestinataire == ""|| $texteMessage == "
     $code_reponse = 400;
 }
 else {
-    
-    
-    if ($dao->getNiveauConnexion($pseudo, $mdp) == 0 ) {
+    if ($dao->getNiveauConnexion($pseudo, $mdp) == 0) {
         $msg = "Erreur : authentification incorrecte.";
         $code_reponse = 401;
     }
@@ -62,14 +58,13 @@ else {
                 $code_reponse = 500;
             }
             else {
-                $msg = $pseudoDestinataire."va recevoir un courriel avec votre demande.";
+                $msg = $pseudoDestinataire." va recevoir un courriel avec votre demande.";
                 $code_reponse = 200;
             }
         }
     }
     
 }
-
 
 // ferme la connexion à MySQL :
 unset($dao);
