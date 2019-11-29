@@ -3,12 +3,12 @@ $dao = new DAO();
 
 //Classe outil
 
-
-
 //Récupération du pseudo de l'utilisateur
 $pseudo = ( empty($this->request['pseudo'])) ? "" : $this->request['pseudo'];
 $mdpsha1 = ( empty($this->request['mdp'])) ? "" : $this->request['mdp'];
 $lang = ( empty($this->request['lang'])) ? "" : $this->request['lang'];
+
+if ($lang != "json") $lang = "xml";
 
 $laTrace = null;
 if ( $pseudo == "" || $mdpsha1 == "") {
@@ -24,17 +24,14 @@ else
     else{
          $msg = "Trace créée";
          $code_reponse = 200;
-         $trace = new Trace(1,date('Y-m-d H:i:s', time()),null,0,$idUser);
+         $trace = new Trace(1, date('Y-m-d H:i:s', time()), null, 0, $idUser);
         
          $dao->creerUneTrace($trace);
         
          $lesTrace = $dao->getToutesLesTraces();
          $laTrace = $dao->getUneTrace(sizeof($lesTrace)-1);
-        
     }
 }
-
-
 
 // ferme la connexion à MySQL :
 unset($dao);
@@ -64,9 +61,6 @@ function creerFluxXML($msg,$laTrace)
     
     // crée une instance de DOMdocument (DOM : Document Object Model)
   
-    
-    
-    
     $doc = new DOMDocument();
     
     // specifie la version et le type d'encodage
@@ -74,7 +68,7 @@ function creerFluxXML($msg,$laTrace)
     $doc->encoding = 'UTF-8';
     
     // crée un commentaire et l'encode en UTF-8
-    $elt_commentaire = $doc->createComment('Service web DemanderMdp - BTS SIO - Lycée De La Salle - Rennes');
+    $elt_commentaire = $doc->createComment('Service web DemarrerEnregistrementParcours - BTS SIO - Lycée De La Salle - Rennes');
     // place ce commentaire à la racine du document XML
     $doc->appendChild($elt_commentaire);
     
@@ -131,7 +125,6 @@ function creerFluxJSON($msg, $laTrace)
     
     // construction de la racine
     $elt_racine = ["data" => $elt_data];
-    
     
     $laTraceAffichee = array();
     $unObjetTrace = array();
