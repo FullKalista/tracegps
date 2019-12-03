@@ -153,7 +153,7 @@ function creerFluxXML($msg,$leParcours)
             $dateHeure    = $doc->createElement('dateHeureFin', $leParcours->getDateHeureFin());
             $elt_Parcours->appendChild($dateHeure);
             
-            $elt_idUser     = $doc->createElement('iduUser', $leParcours->getIdUtilisateur());
+            $elt_idUser     = $doc->createElement('idUtilisateur', $leParcours->getIdUtilisateur());
             $elt_Parcours->appendChild($elt_idUser);
             
             
