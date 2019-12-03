@@ -22,7 +22,7 @@ else
          $code_reponse = 401;
     }
     else{
-         $msg = "Trace créée";
+         $msg = "Trace créée.";
          $code_reponse = 200;
          $trace = new Trace(1,date('Y-m-d H:i:s', time()),null,0,$idUser);
         
