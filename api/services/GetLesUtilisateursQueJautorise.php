@@ -46,7 +46,7 @@ else {
     }
     else
     {	// récupération de la liste des utilisateurs à l'aide de la méthode getLesUtilisateursQueJautorise de la classe DAO
-        $lesUtilisateurs = $dao->getLesUtilisateursAutorises($idUtilisateur);
+        $lesUtilisateurs = $dao->getLesUtilisateursAutorisant($dao->getUnUtilisateur($pseudo)->getId());
         
         // mémorisation du nombre d'utilisateurs
         $nbReponses = sizeof($lesUtilisateurs);
