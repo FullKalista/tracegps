@@ -28,8 +28,7 @@ else
         
          $dao->creerUneTrace($trace);
         
-         $lesTrace = $dao->getToutesLesTraces();
-         $laTrace = $dao->getUneTrace(sizeof($lesTrace)-1);
+         $laTrace = $dao->getUneTrace($trace->getId());
     }
 }
 
@@ -119,25 +118,26 @@ function creerFluxJSON($msg, $laTrace)
      }
      }
      */
-    if($laTrace != null){
     // construction de l'élément "data"
     $elt_data = ["reponse" => $msg];
     
-    // construction de la racine
-    $elt_racine = ["data" => $elt_data];
-    
-    $laTraceAffichee = array();
-    $unObjetTrace = array();
-    $unObjetTrace["id"] = $laTrace->getId();
-    $unObjetTrace["dateHeureDebut"] = $laTrace->getDateHeureDebut() ;
-    $unObjetTrace["terminee"] = 0 ;
-    $unObjetTrace["idUtilisateur"] = $laTrace->getIdutilisateur();
-    $laTraceAffichee[] = $unObjetTrace;
-    
-    $elt_laTrace = ["trace" => $laTraceAffichee];
-    // construction de l'élément "data"
-    $elt_data = ["reponse" => $msg, "donnees" => $elt_laTrace];
+    if($laTrace != null){
+        // construction de la racine
+        $elt_racine = ["data" => $elt_data];
+        
+        $laTraceAffichee = array();
+        $unObjetTrace = array();
+        $unObjetTrace["id"] = $laTrace->getId();
+        $unObjetTrace["dateHeureDebut"] = $laTrace->getDateHeureDebut() ;
+        $unObjetTrace["terminee"] = 0 ;
+        $unObjetTrace["idUtilisateur"] = $laTrace->getIdutilisateur();
+        $laTraceAffichee[] = $unObjetTrace;
+        
+        $elt_laTrace = ["trace" => $laTraceAffichee];
+        // construction de l'élément "data"
+        $elt_data = ["reponse" => $msg, "donnees" => $elt_laTrace];
     }
+    
     $elt_racine = ["data" => $elt_data];
     // retourne le contenu JSON (l'option JSON_PRETTY_PRINT gère les sauts de ligne et l'indentation)
     return json_encode($elt_racine, JSON_PRETTY_PRINT);
