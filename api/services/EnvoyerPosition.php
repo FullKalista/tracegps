@@ -53,12 +53,22 @@ if ($lang != "json") $lang = "xml";
 // La méthode HTTP utilisée doit être GET
 if ($this->getMethodeRequete() != "GET")
 {	$msg = "Erreur : méthode HTTP incorrecte.";
-$code_reponse = 406;
+    $code_reponse = 406;
 }
 else {
     // Les paramètres doivent être présents
     if ($pseudo == '' || $mdp == '' || $idTrace == '' || $dateHeure == '' || $latitude == '' || $longitude == '' || $altitude == '' || $rythmeCardio == '') {
         $msg = "Erreur : données incomplètes ou incorrectes.";
+        $msg .= "&pseudo=" . $pseudo;
+        $msg .= "&mdp=" . $mdp;
+        $msg .= "&idTrace=" . $idTrace;
+        $msg .= "&dateHeure=" . $dateHeure;
+        $msg .= "&latitude=" . $latitude;
+        $msg .= "&longitude=" . $longitude;
+        $msg .= "&altitude=" . $altitude;
+        $msg .= "&rythmeCardio=" . $rythmeCardio;
+        
+        
         $code_reponse = 400;
     }
     else {
