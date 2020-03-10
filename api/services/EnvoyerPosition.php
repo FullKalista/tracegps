@@ -39,10 +39,10 @@ $pseudo = ( empty($this->request['pseudo'])) ? "" : $this->request['pseudo'];
 $mdp = ( empty($this->request['mdp'])) ? "" : $this->request['mdp'];
 $idTrace = ( empty($this->request['idTrace'])) ? "" : $this->request['idTrace'];
 $dateHeure = ( empty($this->request['dateHeure'])) ? "" : $this->request['dateHeure'];
-$latitude = ( empty($this->request['latitude'])) ? "" : $this->request['latitude'];
-$longitude = ( empty($this->request['longitude'])) ? "" : $this->request['longitude'];
-$altitude = ( empty($this->request['altitude'])) ? "" : $this->request['altitude'];
-$rythmeCardio = ( empty($this->request['rythmeCardio'])) ? "" : $this->request['rythmeCardio'];
+$latitude = ( empty($this->request['latitude'])) ? "0" : $this->request['latitude'];
+$longitude = ( empty($this->request['longitude'])) ? "0" : $this->request['longitude'];
+$altitude = ( empty($this->request['altitude'])) ? "0" : $this->request['altitude'];
+$rythmeCardio = ( empty($this->request['rythmeCardio'])) ? "0" : $this->request['rythmeCardio'];
 $lang = ( empty($this->request['lang'])) ? "" : $this->request['lang'];
 $idPoint = null;
 $laTrace = $dao->getUneTrace($idTrace);
@@ -59,14 +59,14 @@ else {
     // Les paramètres doivent être présents
     if ($pseudo == '' || $mdp == '' || $idTrace == '' || $dateHeure == '' || $latitude == '' || $longitude == '' || $altitude == '' || $rythmeCardio == '') {
         $msg = "Erreur : données incomplètes ou incorrectes.";
-        $msg .= "&pseudo=" . $pseudo;
-        $msg .= "&mdp=" . $mdp;
-        $msg .= "&idTrace=" . $idTrace;
-        $msg .= "&dateHeure=" . $dateHeure;
-        $msg .= "&latitude=" . $latitude;
-        $msg .= "&longitude=" . $longitude;
-        $msg .= "&altitude=" . $altitude;
-        $msg .= "&rythmeCardio=" . $rythmeCardio;
+        $msg .= "pseudo=" . $pseudo;
+        $msg .= "mdp=" . $mdp;
+        $msg .= "idTrace=" . $idTrace;
+        $msg .= "dateHeure=" . $dateHeure;
+        $msg .= "latitude=" . $latitude;
+        $msg .= "longitude=" . $longitude;
+        $msg .= "altitude=" . $altitude;
+        $msg .= "rythmeCardio=" . $rythmeCardio;
         
         
         $code_reponse = 400;
